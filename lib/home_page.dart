@@ -1,24 +1,34 @@
-import 'package:expense_tracker_app/add_envelope_page.dart';
-import 'package:expense_tracker_app/login_registration_page.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 
+import 'package:expense_tracker_app/add_envelope_page.dart';
+import 'package:expense_tracker_app/login_registration_page.dart';
+import 'package:expense_tracker_app/envelope_model.dart';
+
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
+
+//Creating list of type EnvelopeModel
+List<EnvelopeModel> listEnvelope = [];
+
+//Method for appending data to the listEnvelope
+void addToList(EnvelopeModel data) {
+  listEnvelope.add(data);
+}
+
+//Class for HomePage
 class HomePage extends StatefulWidget {
-  String cashAmount;
-  HomePage(this.cashAmount);
   @override
   State<StatefulWidget> createState() {
-    return HomePageState(this.cashAmount);
+    return HomePageState();
   }
 }
 
 class HomePageState extends State<HomePage> {
-  bool drawer = false;
-  String cashAmount;
-  HomePageState(this.cashAmount);
+
   //_scaffoldKey is a global key that is unique across the entire app.
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -48,6 +58,7 @@ class HomePageState extends State<HomePage> {
                       fit: BoxFit.cover,
                     ),
                     onPressed: () {
+
                       /*
                        * currentState is the state for the widget in the tree that currently has a global key.
                        * openDrawer() is the method which opens the drawer.
@@ -67,10 +78,8 @@ class HomePageState extends State<HomePage> {
         child: drawerItems(),
       ),
 
-      /**
-       * A bottom navigation bar to display at the bottom of the scaffold.
-       */
-
+      //A bottom navigation bar to display at the bottom of the scaffold.
+       
       bottomNavigationBar: CurvedNavigationBar(
         backgroundColor: Colors.blueAccent,
         height: 50,
@@ -82,13 +91,13 @@ class HomePageState extends State<HomePage> {
           Icon(Icons.help, size: 30),
         ],
 
-        /**
-         * animationDuration for increasing the duration of the animation
-         */
+        
+        //animationDuration for increasing the duration of the animation
+         
         animationDuration: Duration(milliseconds: 200),
-        /*
-         * index 0 will be selected by default in bottom navigation bar
-         */
+        
+        //index 0 will be selected by default in bottom navigation bar
+         
         index: 0,
         onTap: (index) {
           //Handle button tap
@@ -100,7 +109,6 @@ class HomePageState extends State<HomePage> {
           child: Column(
             children: <Widget>[
               Row(
-                //crossAxisAlignment: CrossAxisAlignment.center,
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
                   Text(
@@ -114,53 +122,35 @@ class HomePageState extends State<HomePage> {
               SizedBox(
                 height: 10.0,
               ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: <Widget>[
-                  //
-                  Wrap(
-                    direction: Axis.horizontal,
-                    //runAlignment: WrapAlignment.start,
-                    spacing: 5.0,
-                    runSpacing: 10.0,
-                    children: <Widget>[
-                      Container(
-                        decoration: BoxDecoration(
-                          color: Colors.red,
-                          borderRadius: BorderRadius.all(Radius.circular(10.0)),
-                        ),
-                        height: 50,
-                        width: 167.5,
-                        child: Padding(
-                          padding: const EdgeInsets.all(10.0),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: <Widget>[
-                              Text(
-                                "Cash",
-                                style: TextStyle(color: Colors.grey),
-                              ),
-                              Text(
-                                cashAmount,
-                                style: TextStyle(fontSize: 16.0),
-                              )
-                            ],
-                          ),
-                        ),
-                      ),
-                      addEnvelope()
-                    ],
-                  ),
-                ],
-              )
-            ],
+              
+                SingleChildScrollView(
+                    child:wrapEnvelop(),
+                )
+                
+                          ],
           ),
         ),
       ),
     );
   }
 
-  Widget addEnvelope() {
+  //Wrap design
+  Wrap wrapEnvelop() {
+    return Wrap(
+      direction: Axis.horizontal,
+      spacing: 5.0,
+      runSpacing: 10.0,
+      children: <Widget>[
+        //Adding envelope infinitely. 
+        for (var i = 0; i < listEnvelope.length; i++)
+          addEnvelope(listEnvelope[i].amount, listEnvelope[i].name),
+        addEnvelopeButton()
+      ],
+    );
+  }
+
+  //Widget for ADD ENVELOPE button
+  Widget addEnvelopeButton() {
     return Container(
       decoration: BoxDecoration(
         color: Colors.red,
@@ -169,13 +159,13 @@ class HomePageState extends State<HomePage> {
       height: 50,
       width: 167.5,
       child: FlatButton(
-        onPressed: (){
-           Navigator.push(context, MaterialPageRoute(builder: (context) {
+        onPressed: () {
+          //Navigating to add envelope page
+          Navigator.push(context, MaterialPageRoute(builder: (context) {
             return AddEnvelopePage();
-        }));
-          
+          }));
         },
-          child: Row(
+        child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: <Widget>[Text("ADD ENVELOPE"), Icon(Icons.add_circle)],
         ),
@@ -184,10 +174,36 @@ class HomePageState extends State<HomePage> {
   }
 }
 
-/*
- * Decoration of Drawer
- */
+//Widget for addEnvelope conatiner
+Widget addEnvelope(String title, String text) {
+  return Container(
+    decoration: BoxDecoration(
+      color: Colors.red,
+      borderRadius: BorderRadius.all(Radius.circular(10.0)),
+    ),
+    height: 50,
+    width: 167.5,
+    child: Padding(
+      padding: const EdgeInsets.all(10.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          Text(
+            title,
+            style: TextStyle(color: Colors.grey),
+          ),
+          Text(
+            text,
+            style: TextStyle(fontSize: 16.0),
+          )
+        ],
+      ),
+    ),
+  );
+}
 
+
+//Decoration of Drawer
 drawerItems() {
   return ListView(
     children: <Widget>[
@@ -212,15 +228,10 @@ drawerItems() {
   );
 }
 
-/*
- * Selects first letter from email 
- */
+//Selects first letter from email  
 displayFirstLetterofEmail() {
   String firstLetterofEmail =
       LoginRegistrationPageState.emailController.text[0];
-
-  /**
-   * Returning first letter of email address by making it capital
-   */
+  //Returning first letter of email address by making it capital 
   return Text("${firstLetterofEmail.toUpperCase()}");
 }

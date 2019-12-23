@@ -26,6 +26,11 @@ dependencies:
   
   #A flutter package for easy implementation of curved navigation bar. 
   curved_navigation_bar:
+  
+  #A flutter package that provides simple calculator.
+  flutter_simple_calculator:
+  
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

@@ -1,7 +1,10 @@
+import 'package:expense_tracker_app/envelope_model.dart';
 import 'package:expense_tracker_app/home_page.dart';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
+//Class for set up cash balance page.
 class SetUpBalancePage extends StatefulWidget {
   @override
   State<StatefulWidget> createState() {
@@ -9,28 +12,38 @@ class SetUpBalancePage extends StatefulWidget {
   }
 }
 
+/*
+ * deletedOutput is the output which will be remained after pressing backspace button.
+ * output is the value shown in the display.
+ * _output is a variable used for doing calculation.
+ */
 var deletedOutput;
 var output = "0 NPR";
 var _output = "";
 
+//Creating a text style
 textStyle() {
   return TextStyle(color: Colors.grey[600], fontSize: 40.0);
 }
 
 class SetUpBalancePageState extends State<SetUpBalancePage> {
 
+  //A method for validating different conditions after pressing any numbered button.
   void buttonPressed(var buttonText) {
 
-    if(buttonText=="."){
-      if(_output.contains(".")){
+    //dot('.') button can be pressed only one time.
+    if (buttonText == ".") {
+      if (_output.contains(".")) {
         return;
       }
     }
 
-    if(_output.length<10){
+    //Characters up to 10 can only be pressed.
+    if (_output.length < 10) {
       _output = _output + buttonText;
     }
-    
+
+    //Notify the framework that the internal state of this object has changed.
     setState(() {
       output = _output;
     });
@@ -47,9 +60,7 @@ class SetUpBalancePageState extends State<SetUpBalancePage> {
         ),
         Column(
           children: <Widget>[
-            /**
-                 *  Adding dollar symbol in card
-                 */
+            //Adding dollar symbol in card
             Card(
               clipBehavior: Clip.antiAliasWithSaveLayer,
               child: Container(
@@ -92,33 +103,33 @@ class SetUpBalancePageState extends State<SetUpBalancePage> {
                   color: Colors.grey[200],
                   child: Center(
                       child: Text(
-                output,
-                style: textStyle(),
-              ))),
+                    output,
+                    style: textStyle(),
+                  ))),
             ),
-            
             Container(
               height: 70,
               color: Colors.grey[200],
               child: IconButton(
                 icon: Icon(Icons.backspace),
                 onPressed: () {
+                  //length of the entered number
+                  int len = output.length;
                   
-                    int len = output.length;
-                    print(len);
-                    if (len > 1 && output !="0 NPR") {
-                      deletedOutput = output.substring(0, len - 1);
+                  if (len > 1 && output != "0 NPR") {
+                    //clearing the entered number after pressing backspace button
+                    deletedOutput = output.substring(0, len - 1);
+                  }
+
+                  setState(() {
+                    if (len == 1) {
+                      output = "0 NPR";
+                      _output = "";
+                    } else if (output != "0 NPR") {
+                      output = deletedOutput;
+                      _output = deletedOutput;
                     }
-                    print(deletedOutput);
-                    setState(() {
-                      if(len==1){
-                        output = "0 NPR";
-                        _output="";
-                      }else if(output !="0 NPR"){
-                        output = deletedOutput;
-                        _output = deletedOutput;
-                      }
-                    });
+                  });
                 },
               ),
             )
@@ -127,6 +138,8 @@ class SetUpBalancePageState extends State<SetUpBalancePage> {
         SizedBox(
           height: 50,
         ),
+
+        //Layout for keypad.
         Expanded(
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -169,8 +182,16 @@ class SetUpBalancePageState extends State<SetUpBalancePage> {
                   color: Colors.green,
                 ),
                 onPressed: () {
-                  Navigator.push(context, MaterialPageRoute(builder: (context){
-                    return HomePage(output);
+
+                  //Creating object of EnvelopeModel class and passing envelope name and value of envelope in EnvelopeModel constructor. 
+                  EnvelopeModel env = new EnvelopeModel("Cash", output);
+                  
+                  //appending env to listEnvelope
+                  addToList(env);
+
+                  //Navigating to home page
+                  Navigator.push(context, MaterialPageRoute(builder: (context) {
+                    return HomePage();
                   }));
                 },
               ),
@@ -181,6 +202,7 @@ class SetUpBalancePageState extends State<SetUpBalancePage> {
     ));
   }
 
+  //Widget for flatButton
   Widget flatButton(String buttonText) {
     return FlatButton(
       child: Text(buttonText, style: textStyle()),
