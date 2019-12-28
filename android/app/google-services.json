@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "950548420722",
+    "firebase_url": "https://fypproject-bdaf3.firebaseio.com",
+    "project_id": "fypproject-bdaf3",
+    "storage_bucket": "fypproject-bdaf3.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:950548420722:android:a095ab407e471992878aeb",
+        "android_client_info": {
+          "package_name": "com.example.expense_tracker_app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "950548420722-coa21jj09c04cocj0l4ikug9jlggo2tc.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCSMZuojHNngMrNuNlbN3eSTPqd8x4dPsU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "950548420722-coa21jj09c04cocj0l4ikug9jlggo2tc.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -1,5 +1,6 @@
 import 'package:expense_tracker_app/home_page.dart';
 import 'package:expense_tracker_app/envelope_model.dart';
+import 'package:expense_tracker_app/decorations.dart';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -15,15 +16,28 @@ class AddEnvelopePage extends StatefulWidget {
 String _dropDownValue;
 
 class AddEnvelopePageState extends State<AddEnvelopePage> {
-
   /*
    * _initialValueinputController is a TextEditingController of Intial Value textfield.
    *  envelopeNameinputController is a TextEditingController of Envelope name textfield.
+   *  additionalNotesinputController is a TextEditingController of Additional notes textfield.
    */
 
   static final initialValueinputController = TextEditingController();
   static final envelopeNameinputController = TextEditingController();
+  static final additionalNotesinputController = TextEditingController();
 
+  /*
+   * FocusNode is an object that can be used by a stateful widget to obtain the keyboard focus and to handle keyboard events.
+   * focusNodeEnvelopeName is a Focus Node of Envelope Name textfield
+   * focusNodeInitialValue is a Focus Node of Initial Value textfield
+   * focusNodeAdditionalNotes is a Focus Node of Additional notes textfield
+   */
+
+  FocusNode focusNodeEnvelopeName = new FocusNode();
+  FocusNode focusNodeInitialValue = new FocusNode();
+  FocusNode focusNodeAdditionalNotes = new FocusNode();
+
+  //bool autofocus=false;
   @override
   void initState() {
     super.initState();
@@ -31,21 +45,52 @@ class AddEnvelopePageState extends State<AddEnvelopePage> {
     // setState(() {
     //   _inputController.text = "0.0";
     // });
+
+    //addListener is triggered whenever the focus of the textfield changes
+    focusNodeEnvelopeName.addListener(() {
+      setState(() {});
+    });
+
+    focusNodeInitialValue.addListener(() {
+      setState(() {});
+    });
+
+    focusNodeAdditionalNotes.addListener(() {
+      setState(() {});
+    });
+  }
+
+  @override
+  void dispose() {
+    // Clean up the focus node when the Form is disposed.
+    focusNodeEnvelopeName.dispose();
+    focusNodeInitialValue.dispose();
+    focusNodeAdditionalNotes.dispose();
+    super.dispose();
   }
 
   //if isStack is true then calculator is poped-up else calculator is not poped-up
-   bool isStack = false;
+  bool isStack = false;
 
   //if isButtonBar is true then button bar is displayed below the calculator else button bar is not displayed
-   bool isButtonBar = false;
+  bool isButtonBar = false;
 
   //initial value of calculator which is 0
   static double currentValue = 0;
 
+  //setting autofocus to true
+  // setAutoFocusTrue(){
+  //   setState(() {
+  //     autofocus=true;
+  //   });
+  // }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       appBar: AppBar(
+        backgroundColor: Color.fromRGBO(80, 213, 162, 1.0),
         leading: IconButton(
           onPressed: () {
             //Navigating back to homepage after pressing close button in app bar.
@@ -58,7 +103,8 @@ class AddEnvelopePageState extends State<AddEnvelopePage> {
             icon: Icon(Icons.check),
             onPressed: () {
               //Creating object of Envelope class and passing envelope name and initial value of envelope in Envelope constructor.
-              EnvelopeModel env = new EnvelopeModel(envelopeNameinputController.text,
+              EnvelopeModel env = new EnvelopeModel(
+                  envelopeNameinputController.text,
                   initialValueinputController.text);
 
               //appending env to listEnvelope
@@ -87,8 +133,13 @@ class AddEnvelopePageState extends State<AddEnvelopePage> {
         Column(
           children: <Widget>[
             TextField(
+              //autofocus: true,
+              focusNode: focusNodeEnvelopeName,
               controller: envelopeNameinputController,
-              decoration: InputDecoration(labelText: "Envelope name"),
+              decoration: InputDecoration(
+                  focusedBorder: setFocusedBorder(),
+                  labelText: "Envelope name",
+                  labelStyle: changingFocus(focusNodeEnvelopeName)),
             ),
             SizedBox(
               height: 20.0,
@@ -124,8 +175,12 @@ class AddEnvelopePageState extends State<AddEnvelopePage> {
 
             //Textfield of initial value
             TextField(
+              focusNode: focusNodeInitialValue,
               controller: initialValueinputController,
-              decoration: InputDecoration(labelText: "Initial value"),
+              decoration: InputDecoration(
+                  focusedBorder: setFocusedBorder(),
+                  labelText: "Initial value",
+                  labelStyle: changingFocus(focusNodeInitialValue)),
               readOnly: true,
               onTap: () {
                 setState(() {
@@ -134,19 +189,31 @@ class AddEnvelopePageState extends State<AddEnvelopePage> {
                 });
               },
             ),
+            SizedBox(
+              height: 8.0,
+            ),
+            TextField(
+                focusNode: focusNodeAdditionalNotes,
+                controller: additionalNotesinputController,
+                decoration: InputDecoration(
+                  //Underline color of text field
+                  focusedBorder: setFocusedBorder(),
+                  labelText: "Additional notes",
+                  hintText: "Optional",
+                  labelStyle: changingFocus(focusNodeAdditionalNotes),
+                )),
           ],
         ),
 
         //For displaying buttonBar
         isButtonBar
-             ?
-             Positioned(
+            ? Positioned(
                 right: 36.5,
                 bottom: 100,
                 height: 50,
                 child: Container(
                   width: 270,
-                  color: Colors.red,
+                  color: Color.fromRGBO(80, 213, 162, 1.0),
                   child: ButtonBar(
                     alignment: MainAxisAlignment.spaceBetween,
                     children: <Widget>[
@@ -158,8 +225,9 @@ class AddEnvelopePageState extends State<AddEnvelopePage> {
                             isButtonBar = false;
                           });
                         },
-                        child: Text("Cancel"),
-                      ),
+                        child: Text("Cancel",style: TextStyle(
+                          color: Colors.white),
+                      )),
                       FlatButton(
                         onPressed: () {
                           //After pressing insert button the calculated value will get stored in the Initial value container and calculator will get closed
@@ -170,7 +238,9 @@ class AddEnvelopePageState extends State<AddEnvelopePage> {
                                 currentValue.toString();
                           });
                         },
-                        child: Text("Insert"),
+                        child: Text("Insert",style: TextStyle(
+                          color: Colors.white
+                        ),),
                       )
                     ],
                   ),
@@ -190,12 +260,14 @@ class AddEnvelopePageState extends State<AddEnvelopePage> {
                       width: 270,
                       child: SimpleCalculator(
                         theme: const CalculatorThemeData(
-                          borderColor: Colors.black,
-                          displayColor: Colors.black,
-                          commandColor: Colors.orange,
+                          borderColor: Color.fromRGBO(80, 213, 162, 1.0),
+                          displayColor: Color.fromRGBO(80, 213, 162, 1.0),
+                          commandColor: Colors.white,
                           displayStyle: const TextStyle(
-                              fontSize: 80, color: Colors.yellow),
-                          expressionColor: Colors.indigo,
+                              fontSize: 80, color: Colors.white),
+                          expressionColor: Color.fromRGBO(7, 226, 177, 1.0),
+                          operatorColor: Color.fromRGBO(14, 205, 197, 1.0),
+                          operatorStyle: TextStyle(color: Colors.black)
                         ),
                         value: currentValue,
                         hideExpression: false,
@@ -211,9 +283,14 @@ class AddEnvelopePageState extends State<AddEnvelopePage> {
                   ],
                 ),
               )
-            : Container()
+            : Container(),
       ],
     );
+  }
+
+  changingFocus(focusType) {
+    return TextStyle(
+        color: focusType.hasFocus ? setNaturalGreenColor() : Colors.grey);
   }
 
   //Items in dropdown

@@ -25,7 +25,6 @@ class HomePage extends StatefulWidget {
 }
 
 class HomePageState extends State<HomePage> {
-
   //_scaffoldKey is a global key that is unique across the entire app.
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
 
@@ -58,7 +57,6 @@ class HomePageState extends State<HomePage> {
                       fit: BoxFit.cover,
                     ),
                     onPressed: () {
-
                       /*
                        * currentState is the state for the widget in the tree that currently has a global key.
                        * openDrawer() is the method which opens the drawer.
@@ -79,7 +77,7 @@ class HomePageState extends State<HomePage> {
       ),
 
       //A bottom navigation bar to display at the bottom of the scaffold.
-       
+
       bottomNavigationBar: CurvedNavigationBar(
         backgroundColor: Colors.blueAccent,
         height: 50,
@@ -91,43 +89,40 @@ class HomePageState extends State<HomePage> {
           Icon(Icons.help, size: 30),
         ],
 
-        
         //animationDuration for increasing the duration of the animation
-         
+
         animationDuration: Duration(milliseconds: 200),
-        
+
         //index 0 will be selected by default in bottom navigation bar
-         
+
         index: 0,
         onTap: (index) {
           //Handle button tap
         },
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(10.0),
-        child: Container(
-          child: Column(
-            children: <Widget>[
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: <Widget>[
-                  Text(
-                    "List of envelopes",
-                    style:
-                        TextStyle(fontWeight: FontWeight.bold, fontSize: 21.0),
-                  ),
-                  Icon(Icons.settings)
-                ],
-              ),
-              SizedBox(
-                height: 10.0,
-              ),
-              
-                SingleChildScrollView(
-                    child:wrapEnvelop(),
-                )
-                
-                          ],
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(10.0),
+          child: Container(
+            child: Column(
+              children: <Widget>[
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: <Widget>[
+                    Text(
+                      "List of envelopes",
+                      style: TextStyle(
+                          fontWeight: FontWeight.bold, fontSize: 21.0),
+                    ),
+                    Icon(Icons.settings)
+                  ],
+                ),
+                SizedBox(
+                  height: 10.0,
+                ),
+                wrapEnvelop(),
+              ],
+            ),
           ),
         ),
       ),
@@ -141,9 +136,9 @@ class HomePageState extends State<HomePage> {
       spacing: 5.0,
       runSpacing: 10.0,
       children: <Widget>[
-        //Adding envelope infinitely. 
+        //Adding envelope infinitely.
         for (var i = 0; i < listEnvelope.length; i++)
-          addEnvelope(listEnvelope[i].amount, listEnvelope[i].name),
+          addEnvelope(listEnvelope[i].name, listEnvelope[i].amount),
         addEnvelopeButton()
       ],
     );
@@ -202,7 +197,6 @@ Widget addEnvelope(String title, String text) {
   );
 }
 
-
 //Decoration of Drawer
 drawerItems() {
   return ListView(
@@ -228,10 +222,10 @@ drawerItems() {
   );
 }
 
-//Selects first letter from email  
+//Selects first letter from email
 displayFirstLetterofEmail() {
   String firstLetterofEmail =
       LoginRegistrationPageState.emailController.text[0];
-  //Returning first letter of email address by making it capital 
+  //Returning first letter of email address by making it capital
   return Text("${firstLetterofEmail.toUpperCase()}");
 }

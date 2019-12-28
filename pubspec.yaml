@@ -30,6 +30,11 @@ dependencies:
   #A flutter package that provides simple calculator.
   flutter_simple_calculator:
   
+  # #A Flutter plugin to use the Firebase Core API, which enables connecting to multiple Firebase apps.
+  # firebase_core:
+
+  #A Flutter plugin to use the Firebase Authentication API.
+  firebase_auth:
 
 dev_dependencies:
   flutter_test:

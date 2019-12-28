@@ -1,4 +1,6 @@
+import 'package:expense_tracker_app/home_page.dart';
 import 'package:expense_tracker_app/set_up_balance_page.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:expense_tracker_app/snackBar.dart';
@@ -18,6 +20,15 @@ class LoginRegistrationPageState extends State<LoginRegistrationPage> {
   bool registration;
   static final emailController = TextEditingController();
   static final passwordController = TextEditingController();
+
+  bool loginOrSignUp; //boolean value for login and signup
+
+  /*
+   * FirebaseAuth is the entry point of the Firebase Authentication SDK.
+   * instance provides an instance of the class corresponding to the default app.
+   */
+
+  final FirebaseAuth auth = FirebaseAuth.instance;
 
   //The framework will call this method exactly once for each State object it creates.
   @override
@@ -114,7 +125,7 @@ class LoginRegistrationPageState extends State<LoginRegistrationPage> {
                     ),
                     onPressed: () {
                       //validation for login
-                      validateFeildsOfLogin();
+                      validateFeildsOfLoginandSignUp(false);
                     },
                   )
                 : RaisedButton(
@@ -124,7 +135,7 @@ class LoginRegistrationPageState extends State<LoginRegistrationPage> {
                     ),
                     onPressed: () {
                       //validation for signup
-                      validateFeildsOfSignUp();
+                      validateFeildsOfLoginandSignUp(true);
                     },
                   ),
           ),
@@ -199,7 +210,7 @@ class LoginRegistrationPageState extends State<LoginRegistrationPage> {
   }
 
   //Method for validating feilds for login
-  validateFeildsOfLogin() {
+  validateFeildsOfLoginandSignUp(loginOrSignUp) {
     //Email pattern
     Pattern emailPattern =
         r'^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$';
@@ -220,52 +231,86 @@ class LoginRegistrationPageState extends State<LoginRegistrationPage> {
     //If textfield of password is empty then message is displayed in snack bar.
     else if (passwordController.text.isEmpty) {
       String message = "Please enter your password";
+      Scaffold.of(context).showSnackBar(displaySnackBar(message));
+    } else if (passwordController.text.length < 6) {
+      String message = "Password should be at least 6 characters";
       Scaffold.of(context).showSnackBar(displaySnackBar(message));
     }
     //If all fields are validated
     else {
       //clearTextField();
-      //Navigating to Set Up Balance Page
-      Navigator.push(context, MaterialPageRoute(builder: (context) {
-        return SetUpBalancePage();
-      }));
 
-      //Clear all textfeilds
-      
+      //for login
+      if (loginOrSignUp == false) {
+        authValidationFirebaseLoginOrSignUp(false);
+      }
+      //for signUp
+      else if (loginOrSignUp == true) {
+        authValidationFirebaseLoginOrSignUp(true);
+      }
     }
   }
 
-  //Method for validating feilds for signup
-  validateFeildsOfSignUp() {
-    //Email pattern
-    Pattern emailPattern =
-        r'^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$';
+  //Registering user
+  authValidationFirebaseLoginOrSignUp(loginOrSignUp) async {
+    try {
+      //for signUp
+      if (loginOrSignUp == true) {
+        /*
+          * FirebaseUser represents a user
+          * createUserWithEmailAndPassword creates a new user account with the given email address and password.
+          */
 
-    //Regular expressions are Patterns, and can as such be used to match strings or parts of strings.
-    RegExp emailRegExp = RegExp(emailPattern);
+        FirebaseUser user = (await auth.createUserWithEmailAndPassword(
+                email: emailController.text, password: passwordController.text))
+            .user;
 
-    //If textfield of email address is empty then message is displayed in snack bar.
-    if (emailController.text.isEmpty) {
-      String message = "Please enter your email address";
-      Scaffold.of(context).showSnackBar(displaySnackBar(message));
-    }
-    //If standard email pattern does not match with the entered email then message is displayed in snack bar.
-    else if (!emailRegExp.hasMatch(emailController.text)) {
-      String message = "Entered email address pattern is not standared";
-      Scaffold.of(context).showSnackBar(displaySnackBar(message));
-    }
-    //If textfield of password is empty then message is displayed in snack bar.
-    else if (passwordController.text.isEmpty) {
-      String message = "Please enter your password";
-      Scaffold.of(context).showSnackBar(displaySnackBar(message));
-    }
-    //If all fields are validated
-    else {
-      setState(() {
-        registration = true;
-      });
-      //Clear all textfeilds
-      clearTextField();
+        //clearing textfields
+        //clearTextField();
+        setState(() {
+          registration = true;
+        });
+
+        //Navigating to Set Up Balance Page if user registers successfully
+        Navigator.push(context, MaterialPageRoute(builder: (context) {
+          return SetUpBalancePage();
+        }));
+
+        Scaffold.of(context).showSnackBar(
+            displaySnackBar("You are registered!. You can login now!."));
+      }
+
+      //for login
+      else if (loginOrSignUp == false) {
+        FirebaseUser user = (await auth.signInWithEmailAndPassword(
+                email: emailController.text, password: passwordController.text))
+            .user;
+
+        //Navigating to Home Page if user logins successfully
+        Navigator.push(context, MaterialPageRoute(builder: (context) {
+          return HomePage();
+        }));
+      }
+    } catch (e) {
+      // print(e.message);
+      switch (e.message) {
+        case 'An internal error has occurred. [ 7: ]':
+          //if no internet connectivity
+          Scaffold.of(context).showSnackBar(
+              displaySnackBar("Please check your internet connection."));
+          break;
+        case 'The email address is already in use by another account.':
+          //if the user is already registered
+          Scaffold.of(context).showSnackBar(displaySnackBar(e.message));
+          break;
+        case 'There is no user record corresponding to this identifier. The user may have been deleted.':
+          //if email address is not registered
+          Scaffold.of(context).showSnackBar(
+              displaySnackBar("This email address is not registered"));
+          break;
+        default:
+          Scaffold.of(context).showSnackBar(displaySnackBar(e.message));
+      }
     }
   }
 
