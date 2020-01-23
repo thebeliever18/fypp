@@ -1,5 +1,7 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:expense_tracker_app/envelope_model.dart';
 import 'package:expense_tracker_app/home_page.dart';
+import 'package:expense_tracker_app/login_registration_page.dart';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -181,14 +183,17 @@ class SetUpBalancePageState extends State<SetUpBalancePage> {
                   Icons.done_outline,
                   color: Colors.green,
                 ),
-                onPressed: () {
+                onPressed: () async{
 
                   //Creating object of EnvelopeModel class and passing envelope name and value of envelope in EnvelopeModel constructor. 
                   EnvelopeModel env = new EnvelopeModel("Cash", output);
                   
                   //appending env to listEnvelope
                   addToList(env);
-
+                  LoginRegistrationPageState obj= new LoginRegistrationPageState();
+                  var uid=await obj.getCurrentUserId();
+                  print(uid);
+                  Firestore.instance.collection('Envelopes').document(uid).collection('userData').document().setData({'Envelope Name': "Cash",'Initial Value':output});
                   //Navigating to home page
                   Navigator.push(context, MaterialPageRoute(builder: (context) {
                     return HomePage();

@@ -57,10 +57,12 @@ class HomePageState extends State<HomePage> {
                       fit: BoxFit.cover,
                     ),
                     onPressed: () {
+
                       /*
                        * currentState is the state for the widget in the tree that currently has a global key.
                        * openDrawer() is the method which opens the drawer.
                        */
+                      
                       _scaffoldKey.currentState.openDrawer();
                     },
                   ),

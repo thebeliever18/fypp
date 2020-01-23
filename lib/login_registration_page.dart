@@ -3,7 +3,7 @@ import 'package:expense_tracker_app/set_up_balance_page.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:expense_tracker_app/snackBar.dart';
+import 'package:expense_tracker_app/snack_bar.dart';
 
 //Class for login and registration page
 class LoginRegistrationPage extends StatefulWidget {
@@ -187,7 +187,6 @@ class LoginRegistrationPageState extends State<LoginRegistrationPage> {
                       if (registration == true) {
                         //Clear all textfeilds
                         clearTextField();
-
                         setState(() {
                           registration = false;
                         });
@@ -207,6 +206,11 @@ class LoginRegistrationPageState extends State<LoginRegistrationPage> {
         ],
       ),
     );
+  }
+
+  //get the provider’s user ID for the user.
+  Future<String> getCurrentUserId() async{
+    return (await auth.currentUser()).uid;
   }
 
   //Method for validating feilds for login
@@ -256,7 +260,8 @@ class LoginRegistrationPageState extends State<LoginRegistrationPage> {
     try {
       //for signUp
       if (loginOrSignUp == true) {
-        /*
+
+         /*
           * FirebaseUser represents a user
           * createUserWithEmailAndPassword creates a new user account with the given email address and password.
           */

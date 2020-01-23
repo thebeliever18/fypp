@@ -35,7 +35,9 @@ dependencies:
 
   #A Flutter plugin to use the Firebase Authentication API.
   firebase_auth:
-
+  
+  #Cloud Firestore Plugin for Flutter 
+  cloud_firestore:
 dev_dependencies:
   flutter_test:
     sdk: flutter

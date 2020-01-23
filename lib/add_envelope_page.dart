@@ -1,6 +1,8 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:expense_tracker_app/home_page.dart';
 import 'package:expense_tracker_app/envelope_model.dart';
 import 'package:expense_tracker_app/decorations.dart';
+import 'package:expense_tracker_app/login_registration_page.dart';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -37,7 +39,11 @@ class AddEnvelopePageState extends State<AddEnvelopePage> {
   FocusNode focusNodeInitialValue = new FocusNode();
   FocusNode focusNodeAdditionalNotes = new FocusNode();
 
-  //bool autofocus=false;
+  // Create a global key that uniquely identifies the Form widget
+  // and allows validation of the form.
+  final _formKey = GlobalKey<FormState>();
+
+  bool autoValidate;
   @override
   void initState() {
     super.initState();
@@ -58,6 +64,8 @@ class AddEnvelopePageState extends State<AddEnvelopePage> {
     focusNodeAdditionalNotes.addListener(() {
       setState(() {});
     });
+
+    autoValidate = false;
   }
 
   @override
@@ -78,6 +86,11 @@ class AddEnvelopePageState extends State<AddEnvelopePage> {
   //initial value of calculator which is 0
   static double currentValue = 0;
 
+  //variable for doing validation for dropdown box
+  bool validateDropDownButton = false;
+
+
+  String hintTextForDropDownBox="Select envelope type *";
   //setting autofocus to true
   // setAutoFocusTrue(){
   //   setState(() {
@@ -93,6 +106,8 @@ class AddEnvelopePageState extends State<AddEnvelopePage> {
         backgroundColor: Color.fromRGBO(80, 213, 162, 1.0),
         leading: IconButton(
           onPressed: () {
+            //clear all fields of new envelope page
+            clearEnvelopeFeild();
             //Navigating back to homepage after pressing close button in app bar.
             Navigator.pop(context);
           },
@@ -101,19 +116,45 @@ class AddEnvelopePageState extends State<AddEnvelopePage> {
         actions: <Widget>[
           IconButton(
             icon: Icon(Icons.check),
-            onPressed: () {
-              //Creating object of Envelope class and passing envelope name and initial value of envelope in Envelope constructor.
-              EnvelopeModel env = new EnvelopeModel(
-                  envelopeNameinputController.text,
-                  initialValueinputController.text);
+            onPressed: () async {
+              if (_formKey.currentState.validate() && _dropDownValue != null) {
+                //Creating object of Envelope class and passing envelope name and initial value of envelope in Envelope constructor.
+                EnvelopeModel env = new EnvelopeModel(
+                    envelopeNameinputController.text,
+                    initialValueinputController.text);
 
-              //appending env to listEnvelope
-              addToList(env);
+                //appending env to listEnvelope
+                addToList(env);
+                LoginRegistrationPageState obj =
+                    new LoginRegistrationPageState();
+                var uid = await obj.getCurrentUserId();
 
-              //Navigating to home page after pressing  check button of app bar.
-              Navigator.push(context, MaterialPageRoute(builder: (context) {
-                return HomePage();
-              }));
+                Firestore.instance
+                    .collection('Envelopes')
+                    .document(uid)
+                    .collection('userData')
+                    .document()
+                    .setData({
+                  'Envelope Name': envelopeNameinputController.text,
+                  'Envelope Type': namesOfDropDown[int.parse(_dropDownValue)],
+                  'Initial Value': initialValueinputController.text,
+                  'Additional notes': additionalNotesinputController.text
+                });
+
+                //Navigating to home page after pressing  check button of app bar.
+                Navigator.push(context, MaterialPageRoute(builder: (context) {
+                  return HomePage();
+                }));
+
+                //clear all envelope feilds
+                clearEnvelopeFeild();
+
+              } else {
+                autoValidate = true;
+                setState(() {
+                  validateDropDownButton = true;
+                });
+              }
             },
           )
         ],
@@ -126,165 +167,208 @@ class AddEnvelopePageState extends State<AddEnvelopePage> {
     );
   }
 
+  //clear all fields of new envelope page
+  clearEnvelopeFeild(){
+
+     initialValueinputController.clear();
+     envelopeNameinputController.clear();
+     additionalNotesinputController.clear();
+     setState(() {
+       hintTextForDropDownBox="Select envelope type *";
+       _dropDownValue=null;
+     });
+
+  }
+
   //Widget for Envelope form page design
   Widget envelopeForm() {
-    return Stack(
-      children: <Widget>[
-        Column(
-          children: <Widget>[
-            TextField(
-              //autofocus: true,
-              focusNode: focusNodeEnvelopeName,
-              controller: envelopeNameinputController,
-              decoration: InputDecoration(
-                  focusedBorder: setFocusedBorder(),
-                  labelText: "Envelope name",
-                  labelStyle: changingFocus(focusNodeEnvelopeName)),
-            ),
-            SizedBox(
-              height: 20.0,
-            ),
-            Stack(
-              children: <Widget>[
-                Container(
-                  child: DropdownButton(
-                    isExpanded: true,
-                    onChanged: (value) {
-                      setState(() {
-                        _dropDownValue = value;
-                      });
-                    },
-                    value: _dropDownValue,
-                    items: itemsOfDropDown,
-                    hint: Text("Select envelope type *"),
-                    underline: Container(
-                      height: 1,
-                      color: Colors.grey,
+    return Form(
+      key: _formKey,
+      child: Stack(
+        children: <Widget>[
+          Column(
+            children: <Widget>[
+              TextFormField(
+                autovalidate: autoValidate,
+                //autofocus: true,
+                validator: (value) {
+                  if (value.isEmpty) {
+                    return "Envelope name is required";
+                  }
+                  return null;
+                },
+                focusNode: focusNodeEnvelopeName,
+                controller: envelopeNameinputController,
+                decoration: InputDecoration(
+                    focusedBorder: setFocusedBorder(),
+                    labelText: "Envelope name",
+                    labelStyle: changingFocus(focusNodeEnvelopeName)),
+              ),
+              SizedBox(
+                height: 20.0,
+              ),
+              Stack(
+                children: <Widget>[
+                  Container(
+                    child: DropdownButton(
+                      isExpanded: true,
+                      onChanged: (value) {
+                        setState(() {
+                          _dropDownValue = value;
+                          validateDropDownButton=false;
+                        });
+                      },
+                      value: _dropDownValue,
+                      items: itemsOfDropDown,
+                      hint: Text(hintTextForDropDownBox),
+                      underline: Container(
+                          height: 1,
+                          color: validateDropDownButton
+                              ? Colors.red[700]
+                              : Colors.grey),
                     ),
                   ),
-                ),
-                Positioned(
-                  top: -0.5,
-                  child: Text(
-                    "Envelope type",
-                    style: TextStyle(fontSize: 11.5, color: Colors.grey[600]),
+                  Positioned(
+                    top: -0.5,
+                    child: Text(
+                      "Envelope type",
+                      style: TextStyle(fontSize: 11.5, color: Colors.grey[600]),
+                    ),
+                  ),
+                ],
+              ),
+
+              validateDropDownButton
+                  ? Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        Text(
+                          "Select your envelope type",
+                          style: TextStyle(color: Colors.red[700], fontSize: 12.0),
+                        ),
+                      ],
+                    )
+                  : Container(),
+
+              //Textfield of initial value
+              TextFormField(
+                autovalidate: autoValidate,
+                validator: (value) {
+                  if (value.isEmpty) {
+                    return "Please enter your initial value";
+                  }
+                  return null;
+                },
+                focusNode: focusNodeInitialValue,
+                controller: initialValueinputController,
+                decoration: InputDecoration(
+                    focusedBorder: setFocusedBorder(),
+                    labelText: "Initial value",
+                    labelStyle: changingFocus(focusNodeInitialValue)),
+                readOnly: true,
+                onTap: () {
+                  setState(() {
+                    isStack = true;
+                    isButtonBar = true;
+                  });
+                },
+              ),
+              SizedBox(
+                height: 8.0,
+              ),
+              TextField(
+                  focusNode: focusNodeAdditionalNotes,
+                  controller: additionalNotesinputController,
+                  decoration: InputDecoration(
+                    //Underline color of text field
+                    focusedBorder: setFocusedBorder(),
+                    labelText: "Additional notes",
+                    hintText: "Optional",
+                    labelStyle: changingFocus(focusNodeAdditionalNotes),
+                  )),
+            ],
+          ),
+          //For displaying buttonBar
+          isButtonBar
+              ? Positioned(
+                  right: 36.5,
+                  bottom: 100,
+                  height: 50,
+                  child: Container(
+                    width: 270,
+                    color: Color.fromRGBO(80, 213, 162, 1.0),
+                    child: ButtonBar(
+                      alignment: MainAxisAlignment.spaceBetween,
+                      children: <Widget>[
+                        FlatButton(
+                            onPressed: () {
+                              //After pressing cancel button calculator will get closed
+                              setState(() {
+                                isStack = false;
+                                isButtonBar = false;
+                              });
+                            },
+                            child: Text(
+                              "Cancel",
+                              style: TextStyle(color: Colors.white),
+                            )),
+                        FlatButton(
+                          onPressed: () {
+                            //After pressing insert button the calculated value will get stored in the Initial value container and calculator will get closed
+                            setState(() {
+                              isStack = false;
+                              isButtonBar = false;
+                              initialValueinputController.text =
+                                  currentValue.toString();
+                            });
+                          },
+                          child: Text(
+                            "Insert",
+                            style: TextStyle(color: Colors.white),
+                          ),
+                        )
+                      ],
+                    ),
                   ),
                 )
-              ],
-            ),
-
-            //Textfield of initial value
-            TextField(
-              focusNode: focusNodeInitialValue,
-              controller: initialValueinputController,
-              decoration: InputDecoration(
-                  focusedBorder: setFocusedBorder(),
-                  labelText: "Initial value",
-                  labelStyle: changingFocus(focusNodeInitialValue)),
-              readOnly: true,
-              onTap: () {
-                setState(() {
-                  isStack = true;
-                  isButtonBar = true;
-                });
-              },
-            ),
-            SizedBox(
-              height: 8.0,
-            ),
-            TextField(
-                focusNode: focusNodeAdditionalNotes,
-                controller: additionalNotesinputController,
-                decoration: InputDecoration(
-                  //Underline color of text field
-                  focusedBorder: setFocusedBorder(),
-                  labelText: "Additional notes",
-                  hintText: "Optional",
-                  labelStyle: changingFocus(focusNodeAdditionalNotes),
-                )),
-          ],
-        ),
-
-        //For displaying buttonBar
-        isButtonBar
-            ? Positioned(
-                right: 36.5,
-                bottom: 100,
-                height: 50,
-                child: Container(
-                  width: 270,
-                  color: Color.fromRGBO(80, 213, 162, 1.0),
-                  child: ButtonBar(
-                    alignment: MainAxisAlignment.spaceBetween,
+              : Container(),
+          //For displaying calculator
+          isStack
+              ? Positioned(
+                  top: 100,
+                  right: 36.5,
+                  child: Stack(
                     children: <Widget>[
-                      FlatButton(
-                        onPressed: () {
-                          //After pressing cancel button calculator will get closed
-                          setState(() {
-                            isStack = false;
-                            isButtonBar = false;
-                          });
-                        },
-                        child: Text("Cancel",style: TextStyle(
-                          color: Colors.white),
-                      )),
-                      FlatButton(
-                        onPressed: () {
-                          //After pressing insert button the calculated value will get stored in the Initial value container and calculator will get closed
-                          setState(() {
-                            isStack = false;
-                            isButtonBar = false;
-                            initialValueinputController.text =
-                                currentValue.toString();
-                          });
-                        },
-                        child: Text("Insert",style: TextStyle(
-                          color: Colors.white
-                        ),),
-                      )
+                      SizedBox(
+                        height: 290,
+                        width: 270,
+                        child: SimpleCalculator(
+                          theme: const CalculatorThemeData(
+                              borderColor: Color.fromRGBO(80, 213, 162, 1.0),
+                              displayColor: Color.fromRGBO(80, 213, 162, 1.0),
+                              commandColor: Colors.white,
+                              displayStyle: const TextStyle(
+                                  fontSize: 80, color: Colors.white),
+                              expressionColor: Color.fromRGBO(7, 226, 177, 1.0),
+                              operatorColor: Color.fromRGBO(14, 205, 197, 1.0),
+                              operatorStyle: TextStyle(color: Colors.black)),
+                          value: currentValue,
+                          hideExpression: false,
+                          hideSurroundingBorder: false,
+                          onChanged: (key, value, expression) {
+                            setState(() {
+                              currentValue = value;
+                            });
+                            print("$key\t$value\t$expression");
+                          },
+                        ),
+                      ),
                     ],
                   ),
-                ),
-              )
-            : Container(),
-
-        //For displaying calculator
-        isStack
-            ? Positioned(
-                top: 100,
-                right: 36.5,
-                child: Stack(
-                  children: <Widget>[
-                    SizedBox(
-                      height: 290,
-                      width: 270,
-                      child: SimpleCalculator(
-                        theme: const CalculatorThemeData(
-                          borderColor: Color.fromRGBO(80, 213, 162, 1.0),
-                          displayColor: Color.fromRGBO(80, 213, 162, 1.0),
-                          commandColor: Colors.white,
-                          displayStyle: const TextStyle(
-                              fontSize: 80, color: Colors.white),
-                          expressionColor: Color.fromRGBO(7, 226, 177, 1.0),
-                          operatorColor: Color.fromRGBO(14, 205, 197, 1.0),
-                          operatorStyle: TextStyle(color: Colors.black)
-                        ),
-                        value: currentValue,
-                        hideExpression: false,
-                        hideSurroundingBorder: false,
-                        onChanged: (key, value, expression) {
-                          setState(() {
-                            currentValue = value;
-                          });
-                          print("$key\t$value\t$expression");
-                        },
-                      ),
-                    ),
-                  ],
-                ),
-              )
-            : Container(),
-      ],
+                )
+              : Container(),
+        ],
+      ),
     );
   }
 
@@ -293,11 +377,18 @@ class AddEnvelopePageState extends State<AddEnvelopePage> {
         color: focusType.hasFocus ? setNaturalGreenColor() : Colors.grey);
   }
 
+  static List<String> namesOfDropDown = [
+    "Selected nothing",
+    "Cash",
+    "Bank",
+    "Credit Card"
+  ];
+
   //Items in dropdown
   List<DropdownMenuItem<String>> itemsOfDropDown = [
-    getDropDownItem("1", Icon(Icons.attach_money), "Cash"),
-    getDropDownItem("2", Icon(Icons.account_balance), "Bank"),
-    getDropDownItem("3", Icon(Icons.credit_card), "Credit Card"),
+    getDropDownItem("1", Icon(Icons.attach_money), namesOfDropDown[1]),
+    getDropDownItem("2", Icon(Icons.account_balance), namesOfDropDown[2]),
+    getDropDownItem("3", Icon(Icons.credit_card), namesOfDropDown[3]),
   ];
 }
 
