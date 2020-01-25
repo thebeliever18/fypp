@@ -187,7 +187,7 @@ class SetUpBalancePageState extends State<SetUpBalancePage> {
 
                   //Creating object of EnvelopeModel class and passing envelope name and value of envelope in EnvelopeModel constructor. 
                   EnvelopeModel env = new EnvelopeModel("Cash", output);
-                  
+                  //DocumentSnapshot env = new EnvelopeModel("Cash", output);
                   //appending env to listEnvelope
                   addToList(env);
                   LoginRegistrationPageState obj= new LoginRegistrationPageState();

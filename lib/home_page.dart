@@ -8,6 +8,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 //Creating list of type EnvelopeModel
 List<EnvelopeModel> listEnvelope = [];
 
@@ -25,8 +27,46 @@ class HomePage extends StatefulWidget {
 }
 
 class HomePageState extends State<HomePage> {
+
   //_scaffoldKey is a global key that is unique across the entire app.
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
+
+  //boolean variable loginOnline is set to true if user logins in his/her account
+  bool loginOnline;
+
+  //variable which stores envelope data of a specific user extracted from firestore
+  var listEnvelopeFirestoreData;
+  
+   
+
+  //Method for extracting envelope data of a specific user
+  getCurrentUserIdData() async {
+    LoginRegistrationPageState obj = new LoginRegistrationPageState();
+    var uid = await obj.getCurrentUserId();
+
+    //Extracts list of documents from firestore
+    QuerySnapshot querySnapshot = await Firestore.instance
+        .collection('Envelopes')
+        .document(uid)
+        .collection('userData')
+        .getDocuments();
+
+    //storing extracted list of documents in a variable
+    listEnvelopeFirestoreData = await querySnapshot.documents;
+    print(listEnvelopeFirestoreData[0].data);
+    print(listEnvelopeFirestoreData[0].data['Envelope Name']);
+    print(listEnvelopeFirestoreData[0].data['Initial Value']);
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    getCurrentUserIdData();
+     
+    //loginOnline is set to true if user logins in his/her account
+    loginOnline = true;
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -62,7 +102,7 @@ class HomePageState extends State<HomePage> {
                        * currentState is the state for the widget in the tree that currently has a global key.
                        * openDrawer() is the method which opens the drawer.
                        */
-                      
+
                       _scaffoldKey.currentState.openDrawer();
                     },
                   ),
@@ -122,7 +162,7 @@ class HomePageState extends State<HomePage> {
                 SizedBox(
                   height: 10.0,
                 ),
-                wrapEnvelop(),
+                wrapEnvelop()
               ],
             ),
           ),
@@ -131,16 +171,42 @@ class HomePageState extends State<HomePage> {
     );
   }
 
-  //Wrap design
-  Wrap wrapEnvelop() {
-    return Wrap(
+iftrue(){
+  try {
+    for (var i = 0; i < listEnvelopeFirestoreData.length ; i++)
+
+            //displaying online data
+            addEnvelope(listEnvelopeFirestoreData[i].data['Envelope Name'],
+                listEnvelopeFirestoreData[i].data['Initial Value']);
+  } catch (e) {
+    iftrue();
+  }
+}
+
+ //Wrap design
+   wrapEnvelop() {
+    return  Wrap(
       direction: Axis.horizontal,
       spacing: 5.0,
       runSpacing: 10.0,
       children: <Widget>[
         //Adding envelope infinitely.
-        for (var i = 0; i < listEnvelope.length; i++)
-          addEnvelope(listEnvelope[i].name, listEnvelope[i].amount),
+
+        //This if statement works when user logins in his/her account.
+        if (loginOnline == true) 
+          try {
+            
+          } catch (e) {
+          }
+          
+
+        //This if statement works when user presses add envelope button
+        if (loginOnline == false)
+
+          //displaying offline data
+          for (var i = 0; i < listEnvelope.length; i++)
+            addEnvelope(
+                listEnvelope[i].envelopeName, listEnvelope[i].initialValue),
         addEnvelopeButton()
       ],
     );
@@ -157,6 +223,12 @@ class HomePageState extends State<HomePage> {
       width: 167.5,
       child: FlatButton(
         onPressed: () {
+
+          //loginOnline is set to false if user presses add envelope button
+          setState(() {
+            loginOnline = false;
+          });
+
           //Navigating to add envelope page
           Navigator.push(context, MaterialPageRoute(builder: (context) {
             return AddEnvelopePage();
