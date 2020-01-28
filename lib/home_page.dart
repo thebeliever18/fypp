@@ -33,12 +33,13 @@ class HomePageState extends State<HomePage> {
 
   //boolean variable loginOnline is set to true if user logins in his/her account
   bool loginOnline;
+  
+  //boolean value displayData is set to true if the extracted list from firestore is not null
+  bool displayData;
 
   //variable which stores envelope data of a specific user extracted from firestore
   var listEnvelopeFirestoreData;
   
-   
-
   //Method for extracting envelope data of a specific user
   getCurrentUserIdData() async {
     LoginRegistrationPageState obj = new LoginRegistrationPageState();
@@ -52,7 +53,15 @@ class HomePageState extends State<HomePage> {
         .getDocuments();
 
     //storing extracted list of documents in a variable
-    listEnvelopeFirestoreData = await querySnapshot.documents;
+    listEnvelopeFirestoreData = querySnapshot.documents;
+
+    //boolean value displayData is set to true if the extracted list from firestore is not null
+    if (listEnvelopeFirestoreData!=null) {
+      setState(() {
+        displayData=true;
+      });
+    } 
+
     print(listEnvelopeFirestoreData[0].data);
     print(listEnvelopeFirestoreData[0].data['Envelope Name']);
     print(listEnvelopeFirestoreData[0].data['Initial Value']);
@@ -162,7 +171,7 @@ class HomePageState extends State<HomePage> {
                 SizedBox(
                   height: 10.0,
                 ),
-                wrapEnvelop()
+                wrapEnvelop(true)
               ],
             ),
           ),
@@ -171,20 +180,8 @@ class HomePageState extends State<HomePage> {
     );
   }
 
-iftrue(){
-  try {
-    for (var i = 0; i < listEnvelopeFirestoreData.length ; i++)
-
-            //displaying online data
-            addEnvelope(listEnvelopeFirestoreData[i].data['Envelope Name'],
-                listEnvelopeFirestoreData[i].data['Initial Value']);
-  } catch (e) {
-    iftrue();
-  }
-}
-
  //Wrap design
-   wrapEnvelop() {
+   wrapEnvelop(val) {
     return  Wrap(
       direction: Axis.horizontal,
       spacing: 5.0,
@@ -192,22 +189,34 @@ iftrue(){
       children: <Widget>[
         //Adding envelope infinitely.
 
-        //This if statement works when user logins in his/her account.
-        if (loginOnline == true) 
-          try {
-            
-          } catch (e) {
-          }
+        //if the extracted list from firestore is null then circular progress indicator displayed
+        if (listEnvelopeFirestoreData==null)
+          Center(
+            child: CircularProgressIndicator(
+              backgroundColor: Colors.purple,
+              //valueColor: AlwaysStoppedAnimation<Color>(Colors.red),
+              //value: 0.9,
+            )
+          ), 
           
+        //This if statement works when user logins in his/her account and the list extracted from firestore is not null
+        if (loginOnline == true && displayData==true) 
+          for (var i = 0; i < listEnvelopeFirestoreData.length ; i++)
+            //displaying online data
+            addEnvelope(listEnvelopeFirestoreData[i].data['Envelope Name'],
+                listEnvelopeFirestoreData[i].data['Initial Value']),
 
         //This if statement works when user presses add envelope button
-        if (loginOnline == false)
+        if (val==false)
 
           //displaying offline data
           for (var i = 0; i < listEnvelope.length; i++)
             addEnvelope(
                 listEnvelope[i].envelopeName, listEnvelope[i].initialValue),
-        addEnvelopeButton()
+
+        //calling widget addEnvelopeButton when list is not null or when val is false
+        if (listEnvelopeFirestoreData!=null || val == false) 
+          addEnvelopeButton()
       ],
     );
   }
@@ -224,10 +233,8 @@ iftrue(){
       child: FlatButton(
         onPressed: () {
 
-          //loginOnline is set to false if user presses add envelope button
-          setState(() {
-            loginOnline = false;
-          });
+          //warpEnvelope method is called and false boolean value is passed when user presses add envelope button
+          wrapEnvelop(false);
 
           //Navigating to add envelope page
           Navigator.push(context, MaterialPageRoute(builder: (context) {
