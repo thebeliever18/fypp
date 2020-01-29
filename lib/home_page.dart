@@ -1,6 +1,7 @@
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 
 import 'package:expense_tracker_app/add_envelope_page.dart';
+import 'package:expense_tracker_app/envelope_reorderable_listview.dart';
 import 'package:expense_tracker_app/login_registration_page.dart';
 import 'package:expense_tracker_app/envelope_model.dart';
 
@@ -27,19 +28,18 @@ class HomePage extends StatefulWidget {
 }
 
 class HomePageState extends State<HomePage> {
-
   //_scaffoldKey is a global key that is unique across the entire app.
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
 
   //boolean variable loginOnline is set to true if user logins in his/her account
   bool loginOnline;
-  
+
   //boolean value displayData is set to true if the extracted list from firestore is not null
   bool displayData;
 
   //variable which stores envelope data of a specific user extracted from firestore
-  var listEnvelopeFirestoreData;
-  
+  static var listEnvelopeFirestoreData;
+
   //Method for extracting envelope data of a specific user
   getCurrentUserIdData() async {
     LoginRegistrationPageState obj = new LoginRegistrationPageState();
@@ -56,11 +56,11 @@ class HomePageState extends State<HomePage> {
     listEnvelopeFirestoreData = querySnapshot.documents;
 
     //boolean value displayData is set to true if the extracted list from firestore is not null
-    if (listEnvelopeFirestoreData!=null) {
+    if (listEnvelopeFirestoreData != null) {
       setState(() {
-        displayData=true;
+        displayData = true;
       });
-    } 
+    }
 
     print(listEnvelopeFirestoreData[0].data);
     print(listEnvelopeFirestoreData[0].data['Envelope Name']);
@@ -71,7 +71,7 @@ class HomePageState extends State<HomePage> {
   void initState() {
     // TODO: implement initState
     getCurrentUserIdData();
-     
+
     //loginOnline is set to true if user logins in his/her account
     loginOnline = true;
     super.initState();
@@ -106,7 +106,6 @@ class HomePageState extends State<HomePage> {
                       fit: BoxFit.cover,
                     ),
                     onPressed: () {
-
                       /*
                        * currentState is the state for the widget in the tree that currently has a global key.
                        * openDrawer() is the method which opens the drawer.
@@ -165,7 +164,16 @@ class HomePageState extends State<HomePage> {
                       style: TextStyle(
                           fontWeight: FontWeight.bold, fontSize: 21.0),
                     ),
-                    Icon(Icons.settings)
+                    IconButton(
+                      icon: Icon(Icons.settings),
+                      onPressed: () {
+                        //Navigating to Envelope Settings page
+                        Navigator.push(context,
+                            MaterialPageRoute(builder: (context) {
+                          return EnvelopeReorderableListView();
+                        }));
+                      },
+                    )
                   ],
                 ),
                 SizedBox(
@@ -180,9 +188,9 @@ class HomePageState extends State<HomePage> {
     );
   }
 
- //Wrap design
-   wrapEnvelop(val) {
-    return  Wrap(
+  //Wrap design
+  wrapEnvelop(val) {
+    return Wrap(
       direction: Axis.horizontal,
       spacing: 5.0,
       runSpacing: 10.0,
@@ -190,24 +198,23 @@ class HomePageState extends State<HomePage> {
         //Adding envelope infinitely.
 
         //if the extracted list from firestore is null then circular progress indicator displayed
-        if (listEnvelopeFirestoreData==null)
+        if (listEnvelopeFirestoreData == null)
           Center(
-            child: CircularProgressIndicator(
-              backgroundColor: Colors.purple,
-              //valueColor: AlwaysStoppedAnimation<Color>(Colors.red),
-              //value: 0.9,
-            )
-          ), 
-          
+              child: CircularProgressIndicator(
+            backgroundColor: Colors.purple,
+            //valueColor: AlwaysStoppedAnimation<Color>(Colors.red),
+            //value: 0.9,
+          )),
+
         //This if statement works when user logins in his/her account and the list extracted from firestore is not null
-        if (loginOnline == true && displayData==true) 
-          for (var i = 0; i < listEnvelopeFirestoreData.length ; i++)
+        if (loginOnline == true && displayData == true)
+          for (var i = 0; i < listEnvelopeFirestoreData.length; i++)
             //displaying online data
             addEnvelope(listEnvelopeFirestoreData[i].data['Envelope Name'],
                 listEnvelopeFirestoreData[i].data['Initial Value']),
 
         //This if statement works when user presses add envelope button
-        if (val==false)
+        if (val == false)
 
           //displaying offline data
           for (var i = 0; i < listEnvelope.length; i++)
@@ -215,7 +222,7 @@ class HomePageState extends State<HomePage> {
                 listEnvelope[i].envelopeName, listEnvelope[i].initialValue),
 
         //calling widget addEnvelopeButton when list is not null or when val is false
-        if (listEnvelopeFirestoreData!=null || val == false) 
+        if (listEnvelopeFirestoreData != null || val == false)
           addEnvelopeButton()
       ],
     );
@@ -232,7 +239,6 @@ class HomePageState extends State<HomePage> {
       width: 167.5,
       child: FlatButton(
         onPressed: () {
-
           //warpEnvelope method is called and false boolean value is passed when user presses add envelope button
           wrapEnvelop(false);
 

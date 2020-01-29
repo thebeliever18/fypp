@@ -1,6 +1,5 @@
 
 //Model class for envelope
-
 class EnvelopeModel{
   String envelopeName;
   String envelopeType;
