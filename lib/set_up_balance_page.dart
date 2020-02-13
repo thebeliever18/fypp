@@ -193,7 +193,7 @@ class SetUpBalancePageState extends State<SetUpBalancePage> {
                   LoginRegistrationPageState obj= new LoginRegistrationPageState();
                   var uid=await obj.getCurrentUserId();
                   print(uid);
-                  Firestore.instance.collection('Envelopes').document(uid).collection('userData').document().setData({'Envelope Name': "Cash",'Initial Value':output});
+                  Firestore.instance.collection('Envelopes').document(uid).collection('userData').document().setData({'Envelope Name': "Cash",'Envelope Type':"Cash",'Initial Value':output+".0"});
                   //Navigating to home page
                   Navigator.push(context, MaterialPageRoute(builder: (context) {
                     return HomePage();

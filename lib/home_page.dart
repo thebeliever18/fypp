@@ -62,9 +62,9 @@ class HomePageState extends State<HomePage> {
       });
     }
 
-    print(listEnvelopeFirestoreData[0].data);
-    print(listEnvelopeFirestoreData[0].data['Envelope Name']);
-    print(listEnvelopeFirestoreData[0].data['Initial Value']);
+    //print(listEnvelopeFirestoreData[0].data);
+    //print(listEnvelopeFirestoreData[0].data['Envelope Name']);
+    //print(listEnvelopeFirestoreData[0].data['Initial Value']);
   }
 
   @override

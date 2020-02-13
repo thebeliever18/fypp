@@ -169,7 +169,6 @@ class AddEnvelopePageState extends State<AddEnvelopePage> {
 
   //clear all fields of new envelope page
   clearEnvelopeFeild(){
-
      initialValueinputController.clear();
      envelopeNameinputController.clear();
      additionalNotesinputController.clear();
