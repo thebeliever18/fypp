@@ -1,4 +1,8 @@
+
+
 import 'package:cloud_firestore/cloud_firestore.dart';
+//import 'package:firebase_auth/firebase_auth.dart';
+
 import 'package:expense_tracker_app/home_page.dart';
 import 'package:expense_tracker_app/envelope_model.dart';
 import 'package:expense_tracker_app/decorations.dart';
@@ -9,24 +13,41 @@ import 'package:flutter/material.dart';
 import 'package:flutter_simple_calculator/flutter_simple_calculator.dart';
 
 //Class for Add Envelope Page design
-class AddEnvelopePage extends StatefulWidget {
+class EditEnvelopePage extends StatefulWidget {
+  String envelopeName;
+  String initialValue;
+  String additionalNotes;
+  String envelopeType;
+  String documentID;
+  EditEnvelopePage(this.envelopeName, this.initialValue, this.additionalNotes,
+      this.envelopeType,this.documentID);
   @override
-  AddEnvelopePageState createState() => AddEnvelopePageState();
+  EditEnvelopePageState createState() => EditEnvelopePageState(
+      this.envelopeName,
+      this.initialValue,
+      this.additionalNotes,
+      this.envelopeType,
+      this.documentID);
 }
 
-//Selected item in dropdown
-String _dropDownValue;
+class EditEnvelopePageState extends State<EditEnvelopePage> {
+  String envelopeName;
+  String initialValue;
+  String additionalNotes;
+  String envelopeType;
+  String documentID;
+  EditEnvelopePageState(this.envelopeName, this.initialValue,
+      this.additionalNotes, this.envelopeType,this.documentID);
 
-class AddEnvelopePageState extends State<AddEnvelopePage> {
   /*
-   * _initialValueinputController is a TextEditingController of Intial Value textfield.
+   *  initialValueinputController is a TextEditingController of Intial Value textfield.
    *  envelopeNameinputController is a TextEditingController of Envelope name textfield.
    *  additionalNotesinputController is a TextEditingController of Additional notes textfield.
    */
 
-  static final initialValueinputController = TextEditingController();
-  static final envelopeNameinputController = TextEditingController();
-  static final additionalNotesinputController = TextEditingController();
+  TextEditingController envelopeNameinputController;
+  TextEditingController initialValueinputController;
+  TextEditingController additionalNotesinputController;
 
   /*
    * FocusNode is an object that can be used by a stateful widget to obtain the keyboard focus and to handle keyboard events.
@@ -44,6 +65,12 @@ class AddEnvelopePageState extends State<AddEnvelopePage> {
   final _formKey = GlobalKey<FormState>();
 
   bool autoValidate;
+
+  //boolean variable for disabling certain textfeilds
+  bool enable=true;
+
+  //The index of envelopeType is stored in envelopeTypeIndex
+  String envelopeTypeIndex;
   @override
   void initState() {
     super.initState();
@@ -66,6 +93,26 @@ class AddEnvelopePageState extends State<AddEnvelopePage> {
     });
 
     autoValidate = false;
+    envelopeNameinputController = TextEditingController(text: envelopeName);
+    initialValueinputController = TextEditingController(text: initialValue);
+    additionalNotesinputController =
+        TextEditingController(text: additionalNotes);
+
+    //envelopeType extracted from firestore is indexed
+    if (envelopeType == "Cash") {
+      envelopeTypeIndex = "1";
+    } else if (envelopeType == "Bank") {
+      envelopeTypeIndex = "2";
+    } else if (envelopeType == "Credit Card") {
+      envelopeTypeIndex = "3";
+    }
+
+    //If envelope name is Cash then specific textfeilds are disabled else enabled
+    if (envelopeName == "Cash") {
+      enable = false;
+    } else {
+      enable = true;
+    }
   }
 
   @override
@@ -89,8 +136,7 @@ class AddEnvelopePageState extends State<AddEnvelopePage> {
   //variable for doing validation for dropdown box
   bool validateDropDownButton = false;
 
-
-  String hintTextForDropDownBox="Select envelope type *";
+  String hintTextForDropDownBox = "Select envelope type *";
   //setting autofocus to true
   // setAutoFocusTrue(){
   //   setState(() {
@@ -103,7 +149,8 @@ class AddEnvelopePageState extends State<AddEnvelopePage> {
     return Scaffold(
       resizeToAvoidBottomInset: false,
       appBar: AppBar(
-        backgroundColor: Color.fromRGBO(80, 213, 162, 1.0),
+        backgroundColor: setNaturalGreenColor(),
+        title: Text("Edit envelope"),
         leading: IconButton(
           onPressed: () {
             //clear all fields of new envelope page
@@ -114,10 +161,34 @@ class AddEnvelopePageState extends State<AddEnvelopePage> {
           icon: Icon(Icons.close),
         ),
         actions: <Widget>[
+         //delete button is displayed for all envelope name except for Cash
+         enable ? IconButton(
+              icon: Icon(Icons.delete),
+              
+              onPressed: () async{
+                
+                print("delete");
+                LoginRegistrationPageState obj =
+                    new LoginRegistrationPageState();
+                var uid = await obj.getCurrentUserId();
+
+                Firestore.instance
+                    .collection('Envelopes')
+                    .document(uid)
+                    .collection('userData')
+                    .document(documentID)
+                    .delete();
+
+              //after deleting navigating to home page
+              Navigator.push(context, MaterialPageRoute(builder: (context) {
+                    return HomePage();
+                  }));
+              }): Container(),
+              
           IconButton(
             icon: Icon(Icons.check),
             onPressed: () async {
-              if (_formKey.currentState.validate() && _dropDownValue != null) {
+              if (_formKey.currentState.validate() && envelopeType != null) {
                 //Creating object of Envelope class and passing envelope name and initial value of envelope in Envelope constructor.
                 EnvelopeModel env = new EnvelopeModel(
                     envelopeNameinputController.text,
@@ -136,12 +207,10 @@ class AddEnvelopePageState extends State<AddEnvelopePage> {
                     .document()
                     .setData({
                   'Envelope Name': envelopeNameinputController.text,
-                  'Envelope Type': namesOfDropDown[int.parse(_dropDownValue)],
+                  'Envelope Type': namesOfDropDown[int.parse(envelopeType)],
                   'Initial Value': initialValueinputController.text,
                   'Additional notes': additionalNotesinputController.text
                 });
-
-               
 
                 //Navigating to home page after pressing  check button of app bar.
                 Navigator.push(context, MaterialPageRoute(builder: (context) {
@@ -150,7 +219,6 @@ class AddEnvelopePageState extends State<AddEnvelopePage> {
 
                 //clear all envelope feilds
                 clearEnvelopeFeild();
-
               } else {
                 autoValidate = true;
                 setState(() {
@@ -160,7 +228,6 @@ class AddEnvelopePageState extends State<AddEnvelopePage> {
             },
           )
         ],
-        title: Text("New Envelope"),
       ),
       body: Padding(
         padding: const EdgeInsets.all(10.0),
@@ -170,19 +237,22 @@ class AddEnvelopePageState extends State<AddEnvelopePage> {
   }
 
   //clear all fields of new envelope page
-  clearEnvelopeFeild(){
-     initialValueinputController.clear();
-     envelopeNameinputController.clear();
-     additionalNotesinputController.clear();
-     setState(() {
-       hintTextForDropDownBox="Select envelope type *";
-       _dropDownValue=null;
-     });
-
+  clearEnvelopeFeild() {
+    initialValueinputController.clear();
+    envelopeNameinputController.clear();
+    additionalNotesinputController.clear();
+    setState(() {
+      hintTextForDropDownBox = "Select envelope type *";
+      envelopeTypeIndex = null;
+    });
   }
 
   //Widget for Envelope form page design
   Widget envelopeForm() {
+    print(envelopeName);
+    print(additionalNotes);
+    print(envelopeType);
+    //print(HomePageState.listEnvelopeFirestoreData[2].documentID);
     return Form(
       key: _formKey,
       child: Stack(
@@ -190,6 +260,8 @@ class AddEnvelopePageState extends State<AddEnvelopePage> {
           Column(
             children: <Widget>[
               TextFormField(
+                //If envelope name is Cash then specific textfeilds are disabled else enabled
+                enabled: enable,
                 autovalidate: autoValidate,
                 //autofocus: true,
                 validator: (value) {
@@ -200,6 +272,7 @@ class AddEnvelopePageState extends State<AddEnvelopePage> {
                 },
                 focusNode: focusNodeEnvelopeName,
                 controller: envelopeNameinputController,
+
                 decoration: InputDecoration(
                     focusedBorder: setFocusedBorder(),
                     labelText: "Envelope name",
@@ -211,22 +284,26 @@ class AddEnvelopePageState extends State<AddEnvelopePage> {
               Stack(
                 children: <Widget>[
                   Container(
-                    child: DropdownButton(
-                      isExpanded: true,
-                      onChanged: (value) {
-                        setState(() {
-                          _dropDownValue = value;
-                          validateDropDownButton=false;
-                        });
-                      },
-                      value: _dropDownValue,
-                      items: itemsOfDropDown,
-                      hint: Text(hintTextForDropDownBox),
-                      underline: Container(
-                          height: 1,
-                          color: validateDropDownButton
-                              ? Colors.red[700]
-                              : Colors.grey),
+                    child: IgnorePointer(
+                       //If envelope name is Cash then drop down button is disabled else enabled
+                      ignoring: enable ? false:true,
+                      child: DropdownButton(
+                        isExpanded: true,
+                        onChanged: (value) {
+                          setState(() {
+                            envelopeTypeIndex = value;
+                            validateDropDownButton = false;
+                          });
+                        },
+                        value: envelopeTypeIndex,
+                        items: itemsOfDropDown,
+                        hint: Text(hintTextForDropDownBox),
+                        underline: Container(
+                            height: 1,
+                            color: validateDropDownButton
+                                ? Colors.red[700]
+                                : Colors.grey),
+                      ),
                     ),
                   ),
                   Positioned(
@@ -245,7 +322,8 @@ class AddEnvelopePageState extends State<AddEnvelopePage> {
                       children: <Widget>[
                         Text(
                           "Select your envelope type",
-                          style: TextStyle(color: Colors.red[700], fontSize: 12.0),
+                          style:
+                              TextStyle(color: Colors.red[700], fontSize: 12.0),
                         ),
                       ],
                     )
@@ -278,6 +356,8 @@ class AddEnvelopePageState extends State<AddEnvelopePage> {
                 height: 8.0,
               ),
               TextField(
+                  //If envelope name is Cash then specific textfeilds are disabled else enabled
+                  enabled: enable,
                   focusNode: focusNodeAdditionalNotes,
                   controller: additionalNotesinputController,
                   decoration: InputDecoration(

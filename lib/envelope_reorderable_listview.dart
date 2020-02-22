@@ -1,3 +1,4 @@
+import 'package:expense_tracker_app/edit_envelope_page.dart';
 import 'package:expense_tracker_app/home_page.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -11,8 +12,6 @@ class EnvelopeReorderableListView extends StatefulWidget {
 }
 
 class EnvelopeReorderableListViewState extends State<EnvelopeReorderableListView> {
-  
-  
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -36,9 +35,21 @@ class EnvelopeReorderableListViewState extends State<EnvelopeReorderableListView
         for (var item = 0; item < HomePageState.listEnvelopeFirestoreData.length; item++)
         
           Card(
-            
             key:  ValueKey(HomePageState.listEnvelopeFirestoreData[item]),
             child: ListTile(
+              onTap: (){
+                
+                //Pushing towards edit envelope page
+                
+                Navigator.push(context, MaterialPageRoute(builder: (context) {
+                    return EditEnvelopePage(HomePageState.listEnvelopeFirestoreData[item].data['Envelope Name'],
+                    HomePageState.listEnvelopeFirestoreData[item].data['Initial Value'],
+                    HomePageState.listEnvelopeFirestoreData[item].data['Additional notes'],
+                    HomePageState.listEnvelopeFirestoreData[item].data['Envelope Type'],
+                    HomePageState.listEnvelopeFirestoreData[item].documentID
+                    );
+                  }));
+              },
               
               leading:  Container(
                 height: 40,
