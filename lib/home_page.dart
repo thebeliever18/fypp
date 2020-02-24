@@ -1,6 +1,7 @@
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 
 import 'package:expense_tracker_app/add_envelope_page.dart';
+import 'package:expense_tracker_app/categories.dart';
 import 'package:expense_tracker_app/envelope_reorderable_listview.dart';
 import 'package:expense_tracker_app/login_registration_page.dart';
 import 'package:expense_tracker_app/envelope_model.dart';
@@ -123,7 +124,7 @@ class HomePageState extends State<HomePage> {
           )),
       drawer: Drawer(
         elevation: 1.0,
-        child: drawerItems(),
+        child: drawerItems(context),
       ),
 
       //A bottom navigation bar to display at the bottom of the scaffold.
@@ -285,7 +286,7 @@ Widget addEnvelope(String title, String text) {
 }
 
 //Decoration of Drawer
-drawerItems() {
+drawerItems(context) {
   return ListView(
     children: <Widget>[
       DrawerHeader(
@@ -303,7 +304,22 @@ drawerItems() {
       ListTile(
         leading: Icon(Icons.home),
         title: Text("Home"),
-        onTap: () {},
+        onTap: () {
+           //Navigating to home page
+          Navigator.push(context, MaterialPageRoute(builder: (context) {
+                    return HomePage();
+                  }));
+        },
+      ),
+      ListTile(
+        leading: Icon(Icons.category),
+        title: Text("Categories"),
+        onTap: (){
+          //Navigating to category list page
+          Navigator.push(context, MaterialPageRoute(builder: (context) {
+                    return Catagories();
+                  }));
+        },
       )
     ],
   );

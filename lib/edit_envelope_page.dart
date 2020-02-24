@@ -204,15 +204,15 @@ class EditEnvelopePageState extends State<EditEnvelopePage> {
                     .collection('Envelopes')
                     .document(uid)
                     .collection('userData')
-                    .document()
-                    .setData({
+                    .document(documentID)
+                    .updateData({
                   'Envelope Name': envelopeNameinputController.text,
-                  'Envelope Type': namesOfDropDown[int.parse(envelopeType)],
+                  'Envelope Type': namesOfDropDown[int.parse(envelopeTypeIndex)],
                   'Initial Value': initialValueinputController.text,
                   'Additional notes': additionalNotesinputController.text
                 });
 
-                //Navigating to home page after pressing  check button of app bar.
+                //Navigating to home page after updating values.
                 Navigator.push(context, MaterialPageRoute(builder: (context) {
                   return HomePage();
                 }));

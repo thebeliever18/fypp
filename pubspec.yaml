@@ -38,6 +38,9 @@ dependencies:
   
   #Cloud Firestore Plugin for Flutter 
   cloud_firestore:
+
+  #Flutter plugin for generating random colours
+  random_color: ^1.0.3
 dev_dependencies:
   flutter_test:
     sdk: flutter

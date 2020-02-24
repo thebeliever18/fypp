@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+
+import 'login_registration_page.dart';
 //Underline color of text field
 
 setFocusedBorder() {
@@ -12,4 +14,11 @@ setLightGreenColor(){
 
 setNaturalGreenColor(){
   return Color.fromRGBO(80, 213, 162, 1.0);
+}
+
+Future<String> getUserId() async{
+  LoginRegistrationPageState obj =
+                    new LoginRegistrationPageState();
+  String uid = await obj.getCurrentUserId();
+  return uid;
 }
