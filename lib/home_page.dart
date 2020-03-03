@@ -5,6 +5,8 @@ import 'package:expense_tracker_app/categories.dart';
 import 'package:expense_tracker_app/envelope_reorderable_listview.dart';
 import 'package:expense_tracker_app/login_registration_page.dart';
 import 'package:expense_tracker_app/envelope_model.dart';
+import 'package:expense_tracker_app/transaction_module/transaction_page.dart';
+
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -133,11 +135,39 @@ class HomePageState extends State<HomePage> {
         backgroundColor: Colors.blueAccent,
         height: 50,
         items: <Widget>[
-          Icon(Icons.home, size: 30),
-          Icon(Icons.calendar_today, size: 25),
-          Icon(Icons.add, size: 30),
-          Icon(Icons.pie_chart, size: 30),
-          Icon(Icons.help, size: 30),
+          IconButton(icon: Icon(
+          Icons.home, 
+          size: 30,
+          ),
+          onPressed: (){
+
+          },),
+          IconButton(
+            onPressed: (){
+
+            },
+            icon: Icon(Icons.calendar_today, size: 25)),
+          IconButton(
+              icon: Icon(Icons.add,size: 30,),
+              onPressed: () {
+                Navigator.push(context, MaterialPageRoute(builder: (context) {
+                  return TransactionPage();
+                }));
+              }),
+          // Icon(
+          //   Icons.add,
+          //   size: 30,
+          // ),
+         IconButton(
+              icon: Icon(Icons.pie_chart,size: 30,),
+              onPressed: () {
+                
+              }),
+          IconButton(
+              icon: Icon(Icons.help,size: 30,),
+              onPressed: () {
+                
+              }),
         ],
 
         //animationDuration for increasing the duration of the animation
@@ -305,20 +335,20 @@ drawerItems(context) {
         leading: Icon(Icons.home),
         title: Text("Home"),
         onTap: () {
-           //Navigating to home page
+          //Navigating to home page
           Navigator.push(context, MaterialPageRoute(builder: (context) {
-                    return HomePage();
-                  }));
+            return HomePage();
+          }));
         },
       ),
       ListTile(
         leading: Icon(Icons.category),
         title: Text("Categories"),
-        onTap: (){
+        onTap: () {
           //Navigating to category list page
           Navigator.push(context, MaterialPageRoute(builder: (context) {
-                    return Catagories();
-                  }));
+            return Catagories();
+          }));
         },
       )
     ],
