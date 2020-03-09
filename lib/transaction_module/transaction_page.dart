@@ -1,3 +1,5 @@
+import 'dart:ffi';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:expense_tracker_app/decorations.dart';
 import 'package:expense_tracker_app/envelope_reorderable_listview.dart';
@@ -35,6 +37,7 @@ class TransactionPageState extends State<TransactionPage> {
 
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
 
+  List information;
   @override
   void initState() {
     // TODO: implement initState
@@ -71,9 +74,13 @@ class TransactionPageState extends State<TransactionPage> {
     setState(() => _categoryInformation = information);
   }
 
-  void updateInformationOfEnvelope(List information) {
-    setState(() => _envelopeInformation = information[0]);
-    calculation(information);
+  void updateInformationOfEnvelope(information) {
+    if(information==null){
+      setState(() => _envelopeInformation = 'Choose envelope');
+    }else{
+      setState(() => _envelopeInformation = information[0]);
+      
+    }
   }
 
   void moveToDisplayCategoryPage() async {
@@ -86,7 +93,7 @@ class TransactionPageState extends State<TransactionPage> {
   }
 
   void moveToDisplayEnvelopePage() async {
-    List information =
+    information =
         await Navigator.push(context, MaterialPageRoute(builder: (context) {
       return EnvelopeReorderableListView(true);
     }));
@@ -427,7 +434,7 @@ class TransactionPageState extends State<TransactionPage> {
                           style:
                               TextStyle(fontSize: 16.0, color: Colors.white)),
                       onPressed: () {
-                        print("pressed");
+                        
                         transactionPageFirebaseConnection();
                       }),
                 )
@@ -507,7 +514,7 @@ class TransactionPageState extends State<TransactionPage> {
         );
 
         _scaffoldKey.currentState.showSnackBar(snackBar);
-
+        calculation(information);
         clearTransactionFeild();
       } catch (e) {
         final snackBar = SnackBar(
@@ -553,10 +560,22 @@ class TransactionPageState extends State<TransactionPage> {
   }
 
   calculation(List information){
-    var amount = amountController.text;
-    print("donedonadone");
-    print(information[1]);
-    
+    double enteredAmount = double.parse(amountController.text);
+    double envelopeAmount = double.parse(information[1]);
+    double calculatedValue;
+    //calculation for expense
+    if(isSwitched==true){
+      calculatedValue = envelopeAmount - enteredAmount;
+      print(calculatedValue);
+    }
+
+    //calculation for income
+    else if(isSwitched==false){
+      calculatedValue = envelopeAmount + enteredAmount;
+      print(calculatedValue);
+    }
+
+    return calculatedValue; 
   }
 
 
