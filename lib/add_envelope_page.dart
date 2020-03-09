@@ -142,7 +142,6 @@ class AddEnvelopePageState extends State<AddEnvelopePage> {
                 });
 
                
-
                 //Navigating to home page after pressing  check button of app bar.
                 Navigator.push(context, MaterialPageRoute(builder: (context) {
                   return HomePage();

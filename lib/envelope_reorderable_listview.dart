@@ -7,19 +7,55 @@ import 'package:expense_tracker_app/decorations.dart';
 
 //Code for Envelope settings page 
 class EnvelopeReorderableListView extends StatefulWidget {
+  bool valueChooseMethod;
+  EnvelopeReorderableListView(this.valueChooseMethod);
   @override
-  EnvelopeReorderableListViewState createState() => EnvelopeReorderableListViewState();
+  EnvelopeReorderableListViewState createState() => EnvelopeReorderableListViewState(this.valueChooseMethod);
 }
 
 class EnvelopeReorderableListViewState extends State<EnvelopeReorderableListView> {
+  bool valueChooseMethod;
+  EnvelopeReorderableListViewState(this.valueChooseMethod);
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: setNaturalGreenColor(),
-        title: Text("Envelope settings"),
+        title: valueChooseMethod ? Text("Choose envelope"): Text("Envelope settings"),
       ),
-      body: reorderableListView(),
+      body: bodyMethod(),
+    );
+  }
+  
+  bodyMethod(){
+    if(valueChooseMethod==true){
+      //for transaction page
+      return chooseEnvelope();
+    }else{
+      return reorderableListView();
+    }
+    
+  }
+
+  //widget for transaction page
+  Widget chooseEnvelope(){
+    return ListView(
+      children: <Widget>[
+        for (var item = 0; item < HomePageState.listEnvelopeFirestoreData.length; item++)
+          ListTile(
+            onTap: (){
+              Navigator.of(context).pop([HomePageState.listEnvelopeFirestoreData[item].data['Envelope Name'],HomePageState.listEnvelopeFirestoreData[item].data['Initial Value']]);
+            },
+            leading:  Container(
+                height: 40,
+                width: 40,
+                child:Center(child: choosingIcons(HomePageState.listEnvelopeFirestoreData[item].data['Envelope Type']),
+                )
+              ),
+              trailing: Text("${HomePageState.listEnvelopeFirestoreData[item].data['Initial Value']}"),
+              title: Text("${HomePageState.listEnvelopeFirestoreData[item].data['Envelope Name']}",    
+          )
+          )],
     );
   }
 

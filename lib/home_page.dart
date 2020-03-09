@@ -2,6 +2,7 @@ import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 
 import 'package:expense_tracker_app/add_envelope_page.dart';
 import 'package:expense_tracker_app/categories.dart';
+
 import 'package:expense_tracker_app/envelope_reorderable_listview.dart';
 import 'package:expense_tracker_app/login_registration_page.dart';
 import 'package:expense_tracker_app/envelope_model.dart';
@@ -201,7 +202,7 @@ class HomePageState extends State<HomePage> {
                         //Navigating to Envelope Settings page
                         Navigator.push(context,
                             MaterialPageRoute(builder: (context) {
-                          return EnvelopeReorderableListView();
+                          return EnvelopeReorderableListView(false);
                         }));
                       },
                     )
@@ -349,6 +350,7 @@ drawerItems(context) {
           Navigator.push(context, MaterialPageRoute(builder: (context) {
             return Catagories();
           }));
+          
         },
       )
     ],

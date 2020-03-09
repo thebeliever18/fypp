@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+
 import 'package:expense_tracker_app/login_registration_page.dart';
 
 import 'package:flutter/cupertino.dart';
@@ -54,6 +55,23 @@ class CatagoriesState extends State<Catagories> {
     getUserIdForCategory();
   }
 
+ @override
+ void didChangeDependencies(){
+   super.didChangeDependencies();
+  
+
+ }
+ 
+  
+   @override
+  void dispose(){
+    
+   
+    
+    super.dispose();
+  }
+
+  
   //
   getUserIdForCategory() async {
     LoginRegistrationPageState obj = new LoginRegistrationPageState();
@@ -108,6 +126,7 @@ class CatagoriesState extends State<Catagories> {
   @override
   Widget build(  BuildContext context) {
     return Scaffold(
+      
       key:_scaffoldKey,
         appBar: AppBar(
           title: Text("Category list"),
@@ -132,7 +151,7 @@ class CatagoriesState extends State<Catagories> {
   Widget titleOfCategory(context) {
     //showData is true then all the data are displayed in user interface
     if (showData == true) {
-      return ListView(children: <Widget>[
+      return  ListView(children: <Widget>[
         for (var i = 0; i < lengthOfCategory; i++)
           Dismissible(
             key: ValueKey(i),
@@ -257,7 +276,7 @@ class CatagoriesState extends State<Catagories> {
       ]);
     }
     return Center(child: CircularProgressIndicator());
-  }
+}
 
   Future addCategory([
     String title,
