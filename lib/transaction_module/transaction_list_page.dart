@@ -21,12 +21,13 @@ class _TransactionListPageState extends State<TransactionListPage> {
     );
   }
 
+  //decoration for the cards of transaction list page
   Widget transactionListPageBody() {
     return ListView(children: <Widget>[
       Card(
           shape:
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.0)),
-          elevation: 10.0,
+          elevation: 7.0,
           color: getRandomColor(),
           child: Container(
             height: 100,
@@ -35,19 +36,46 @@ class _TransactionListPageState extends State<TransactionListPage> {
               Expanded(
                 child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
-                    children: <Widget>[Text("Date")]),
+                    children: <Widget>[
+                      Text("Date",
+                          style: TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 25.0))
+                    ]),
               ),
               Expanded(
                 child: Row(children: <Widget>[
-                  Text("Cash"),
+                  Padding(
+                    padding: const EdgeInsets.only(left:8.0),
+                    child: Text("Cash",
+                        style: TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 20.0)),
+                  ),
                 ]),
               ),
               Expanded(
                 child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: <Widget>[
-                      Text("Food"),
-                      Text("1000", style: TextStyle(color: Colors.green)),
+                      Padding(
+                        padding: const EdgeInsets.only(left:8.0),
+                        child: Text("Food",
+                            style: TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 20.0)),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.only(right:8.0),
+                        child: Text("1000",
+                            style: TextStyle(
+                                color: Colors.green,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 20.0)),
+                      ),
                     ]),
               ),
             ]),
