@@ -73,7 +73,6 @@ class DisplayCategoryPageState extends State<DisplayCategoryPage> {
         showData = true;
       });
     }
-   
   }
 
   @override
@@ -98,8 +97,7 @@ class DisplayCategoryPageState extends State<DisplayCategoryPage> {
              ListTile(
                onTap: (){
                       sendBackValue=listOfCategory[0].data["Category Name"][i];
-                      Navigator.of(context).pop(sendBackValue);
-                      
+                      Navigator.of(context).pop(sendBackValue); 
                },
               leading: CircleAvatar(
                   backgroundColor: getRandomColor(),

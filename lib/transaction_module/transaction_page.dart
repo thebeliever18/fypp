@@ -1,5 +1,3 @@
-import 'dart:ffi';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:expense_tracker_app/decorations.dart';
 import 'package:expense_tracker_app/envelope_reorderable_listview.dart';
@@ -488,7 +486,14 @@ class TransactionPageState extends State<TransactionPage> {
       );
 
       _scaffoldKey.currentState.showSnackBar(snackBar);
-    } else {
+    } else if (isSwitched==true && double.parse(amountController.text) > double.parse(information[1])) {
+      final snackBar = SnackBar(
+        content: Text('Expense amount exceeded the envelope amount. Please check the amount of your envelope and try again.'),
+        duration: Duration(seconds: 3),
+      );
+
+      _scaffoldKey.currentState.showSnackBar(snackBar);
+    }else {
       try {
         LoginRegistrationPageState obj = new LoginRegistrationPageState();
         var uid = await obj.getCurrentUserId();
