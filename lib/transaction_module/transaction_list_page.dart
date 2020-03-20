@@ -1,25 +1,21 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:expense_tracker_app/decorations.dart';
 import 'package:expense_tracker_app/login_registration_page.dart';
+import 'package:expense_tracker_app/transaction_module/transaction_page.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-import 'package:expense_tracker_app/categories.dart';
-
 class TransactionListPage extends StatefulWidget {
   @override
-  _TransactionListPageState createState() => _TransactionListPageState();
+  TransactionListPageState createState() => TransactionListPageState();
 }
 
-class _TransactionListPageState extends State<TransactionListPage> {
+class TransactionListPageState extends State<TransactionListPage> {
   //variable for storing user id
   String uid;
 
   //variable for storing data of transaction
   var listOfTransaction;
-
-  //variable for storing length of the array of a transaction
-  var lengthOfTransaction;
 
   bool displayData = false;
 
@@ -76,70 +72,94 @@ class _TransactionListPageState extends State<TransactionListPage> {
               child: Container(
                 height: 100,
                 width: MediaQuery.of(context).size.width,
-                child: Column(children: <Widget>[
-                  Expanded(
-                    child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: <Widget>[
-                          Text("${listOfTransaction[i].data['Date']}",
-                              style: TextStyle(
-                                  color: setNaturalGreenColor(),
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 25.0))
-                        ]),
-                  ),
-                  Expanded(
-                    child: Row(children: <Widget>[
-                      Padding(
-                        padding: const EdgeInsets.only(left: 8.0),
-                        child: Text("${listOfTransaction[i].data['Envelope']}",
-                            style: TextStyle(
-                                color: setNaturalGreenColor(),
-                                fontWeight: FontWeight.bold,
-                                fontSize: 20.0)),
-                      ),
-                    ]),
-                  ),
-                  Expanded(
-                    child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: <Widget>[
-                          Padding(
-                            padding: const EdgeInsets.only(left: 8.0),
-                            child: Text(
-                                "${listOfTransaction[i].data['Category']}",
+                child: InkWell(
+                  onTap: () {
+                    //Navigating to edit transaction page
+                    Navigator.push(context,
+                        MaterialPageRoute(builder: (context) {
+                      return TransactionPage(true,
+                      listOfTransaction[i].data['Amount'],
+                      listOfTransaction[i].data['Memo'],
+                      listOfTransaction[i].data['Transaction Type'],
+                      payerOrPayee(listOfTransaction[i].data['Transaction Type'],i),
+                      listOfTransaction[i].data['Category'],
+                      listOfTransaction[i].data['Envelope'],
+                      listOfTransaction[i].data['Date'],
+                      );
+                    }));
+                  },
+                  child: Column(children: <Widget>[
+                    Expanded(
+                      child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: <Widget>[
+                            Text("${listOfTransaction[i].data['Date']}",
                                 style: TextStyle(
                                     color: setNaturalGreenColor(),
                                     fontWeight: FontWeight.bold,
-                                    fontSize: 20.0)),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.only(right: 8.0),
-                            child: decorationForAmount(i),
-                          ),
-                        ]),
-                  ),
-                ]),
+                                    fontSize: 25.0))
+                          ]),
+                    ),
+                    Expanded(
+                      child: Row(children: <Widget>[
+                        Padding(
+                          padding: const EdgeInsets.only(left: 8.0),
+                          child: Text(
+                              "${listOfTransaction[i].data['Envelope']}",
+                              style: TextStyle(
+                                  color: setNaturalGreenColor(),
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 20.0)),
+                        ),
+                      ]),
+                    ),
+                    Expanded(
+                      child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: <Widget>[
+                            Padding(
+                              padding: const EdgeInsets.only(left: 8.0),
+                              child: Text(
+                                  "${listOfTransaction[i].data['Category']}",
+                                  style: TextStyle(
+                                      color: setNaturalGreenColor(),
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 20.0)),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.only(right: 8.0),
+                              child: decorationForAmount(i),
+                            ),
+                          ]),
+                    ),
+                  ]),
+                ),
               )),
       ]);
     }
     return Center(child: CircularProgressIndicator());
   }
 
+  payerOrPayee(String transactionType,i){
+    if (transactionType=="Expense") {
+      return listOfTransaction[i].data['Payee'];
+    } else if(transactionType=="Income"){
+      return listOfTransaction[i].data['Payer'];
+    }
+  }
+
   decorationForAmount(i) {
     //if transaction type is income
     if (listOfTransaction[i].data['Transaction Type'] == "Income") {
-      return Text("${"+"+listOfTransaction[i].data['Amount']}",
+      return Text("${"+" + listOfTransaction[i].data['Amount']}",
           style: TextStyle(
               color: Colors.green,
               fontWeight: FontWeight.bold,
               fontSize: 20.0));
     } else if (listOfTransaction[i].data['Transaction Type'] == "Expense") {
-      return Text("${"-"+listOfTransaction[i].data['Amount']}",
+      return Text("${"-" + listOfTransaction[i].data['Amount']}",
           style: TextStyle(
-              color: Colors.red,
-              fontWeight: FontWeight.bold,
-              fontSize: 20.0));
+              color: Colors.red, fontWeight: FontWeight.bold, fontSize: 20.0));
     }
   }
 }

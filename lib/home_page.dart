@@ -6,9 +6,9 @@ import 'package:expense_tracker_app/categories.dart';
 import 'package:expense_tracker_app/envelope_reorderable_listview.dart';
 import 'package:expense_tracker_app/login_registration_page.dart';
 import 'package:expense_tracker_app/envelope_model.dart';
+
 import 'package:expense_tracker_app/transaction_module/transaction_list_page.dart';
 import 'package:expense_tracker_app/transaction_module/transaction_page.dart';
-
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -72,8 +72,33 @@ class HomePageState extends State<HomePage> {
     //print(listEnvelopeFirestoreData[0].data['Initial Value']);
   }
 
+  bool displayDataForCalculation = false;
+  var listOfTransaction;
+  getTransactionsData() async {
+    LoginRegistrationPageState obj = new LoginRegistrationPageState();
+    var uid = await obj.getCurrentUserId();
+
+    QuerySnapshot querySnapshot = await Firestore.instance
+        .collection('Transactions')
+        .document(uid)
+        .collection('transactionData')
+        .getDocuments();
+
+    //storing extracted list of documents in a variable
+    listOfTransaction = querySnapshot.documents;
+
+    if (listOfTransaction != null) {
+      setState(() {
+        displayDataForCalculation = true;
+      });
+    }
+  }
+
   @override
   void initState() {
+    //getting data for calculation
+    getTransactionsData();
+
     // TODO: implement initState
     getCurrentUserIdData();
 
@@ -137,41 +162,46 @@ class HomePageState extends State<HomePage> {
         backgroundColor: Colors.blueAccent,
         height: 50,
         items: <Widget>[
-          IconButton(icon: Icon(
-          Icons.home, 
-          size: 30,
+          IconButton(
+            icon: Icon(
+              Icons.home,
+              size: 30,
+            ),
+            onPressed: () {},
           ),
-          onPressed: (){
-
-          },),
           IconButton(
-            onPressed: (){
-              Navigator.push(context, MaterialPageRoute(builder: (context) {
-                  return TransactionListPage();
-                }));
-            },
-            icon: Icon(Icons.calendar_today, size: 25)),
-          IconButton(
-              icon: Icon(Icons.add,size: 30,),
               onPressed: () {
                 Navigator.push(context, MaterialPageRoute(builder: (context) {
-                  return TransactionPage();
+                  return TransactionListPage();
+                }));
+              },
+              icon: Icon(Icons.calendar_today, size: 25)),
+          IconButton(
+              icon: Icon(
+                Icons.add,
+                size: 30,
+              ),
+              onPressed: () {
+                Navigator.push(context, MaterialPageRoute(builder: (context) {
+                  return TransactionPage(false);
                 }));
               }),
           // Icon(
           //   Icons.add,
           //   size: 30,
           // ),
-         IconButton(
-              icon: Icon(Icons.pie_chart,size: 30,),
-              onPressed: () {
-                
-              }),
           IconButton(
-              icon: Icon(Icons.help,size: 30,),
-              onPressed: () {
-                
-              }),
+              icon: Icon(
+                Icons.pie_chart,
+                size: 30,
+              ),
+              onPressed: () {}),
+          IconButton(
+              icon: Icon(
+                Icons.help,
+                size: 30,
+              ),
+              onPressed: () {}),
         ],
 
         //animationDuration for increasing the duration of the animation
@@ -289,35 +319,81 @@ class HomePageState extends State<HomePage> {
       ),
     );
   }
+
+  calculation(String title, String text) {
+    String returnText = 'none';
+    double envelopeAmount = double.parse(text);
+    bool displayCalculatedValue = false;
+
+    if (displayDataForCalculation == true) {
+      for (var i = 0; i < listOfTransaction.length; i++) {
+        if (title == listOfTransaction[i].data['Envelope']) {
+          if (listOfTransaction[i].data['Transaction Type'] == "Income") {
+            envelopeAmount =
+                envelopeAmount + double.parse(listOfTransaction[i].data['Amount']);
+          } else if (listOfTransaction[i].data['Transaction Type'] ==
+              "Expense") {
+            envelopeAmount =
+                envelopeAmount - double.parse(listOfTransaction[i].data['Amount']);
+          }
+          print(envelopeAmount);
+          print("$title");
+          displayCalculatedValue = true;
+          setState(() {
+            returnText = envelopeAmount.toString();
+          });
+        } else {
+          if (displayCalculatedValue == false) {
+            setState(() {
+              returnText = "no val";
+            });
+          }
+        }
+      }
+    } else if ((displayDataForCalculation == false)) {
+      return returnText;
+    }
+
+    return returnText;
+  }
+
+  Widget addEnvelope(String title, String text) {
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.red,
+        borderRadius: BorderRadius.all(Radius.circular(10.0)),
+      ),
+      height: 50,
+      width: 167.5,
+      child: Padding(
+        padding: const EdgeInsets.all(10.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            Text(
+              title,
+              style: TextStyle(color: Colors.grey),
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: <Widget>[
+                Text(
+                  text,
+                  style: TextStyle(fontSize: 16.0),
+                ),
+                Text(
+                    //
+                    calculation(title, text))
+              ],
+            )
+          ],
+        ),
+      ),
+    );
+  }
 }
 
 //Widget for addEnvelope conatiner
-Widget addEnvelope(String title, String text) {
-  return Container(
-    decoration: BoxDecoration(
-      color: Colors.red,
-      borderRadius: BorderRadius.all(Radius.circular(10.0)),
-    ),
-    height: 50,
-    width: 167.5,
-    child: Padding(
-      padding: const EdgeInsets.all(10.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          Text(
-            title,
-            style: TextStyle(color: Colors.grey),
-          ),
-          Text(
-            text,
-            style: TextStyle(fontSize: 16.0),
-          )
-        ],
-      ),
-    ),
-  );
-}
 
 //Decoration of Drawer
 drawerItems(context) {
@@ -353,7 +429,6 @@ drawerItems(context) {
           Navigator.push(context, MaterialPageRoute(builder: (context) {
             return Catagories();
           }));
-          
         },
       )
     ],

@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:expense_tracker_app/decorations.dart';
 import 'package:expense_tracker_app/envelope_reorderable_listview.dart';
+import 'package:expense_tracker_app/home_page.dart';
 import 'package:expense_tracker_app/login_registration_page.dart';
 import 'package:expense_tracker_app/transaction_module/display_category_page.dart';
 
@@ -9,11 +10,43 @@ import 'package:flutter/material.dart';
 
 //Class for transaction page
 class TransactionPage extends StatefulWidget {
+  bool displayEditTransactionPage;
+
+  String amount, memo, transactiontype, payerOrPayee, category, envelope, displayDate;
+  TransactionPage(
+      [this.displayEditTransactionPage,
+      this.amount,
+      this.memo,
+      this.transactiontype,
+      this.payerOrPayee,
+      this.category,
+      this.envelope,
+      this.displayDate]);
   @override
-  TransactionPageState createState() => TransactionPageState();
+  TransactionPageState createState() => TransactionPageState(
+      this.displayEditTransactionPage,
+      this.amount,
+      this.memo,
+      this.transactiontype,
+      this.payerOrPayee,
+      this.category,
+      this.envelope,
+      this.displayDate);
 }
 
 class TransactionPageState extends State<TransactionPage> {
+  bool displayEditTransactionPage;
+  String amount, memo, transactiontype, payerOrPayee, category, envelope, displayDate;
+  TransactionPageState(
+      this.displayEditTransactionPage,
+      this.amount,
+      this.memo,
+      this.transactiontype,
+      this.payerOrPayee,
+      this.category,
+      this.envelope,
+      this.displayDate);
+
   //bool isSwitched for changing the state of switch
   bool isSwitched = false;
 
@@ -29,9 +62,9 @@ class TransactionPageState extends State<TransactionPage> {
   //
   DateTime _dateTime;
 
-  final amountController = TextEditingController();
-  final payerOrPayeeController = TextEditingController();
-  final memoController = TextEditingController();
+  var amountController = TextEditingController();
+  var payerOrPayeeController = TextEditingController();
+  var memoController = TextEditingController();
 
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
 
@@ -39,7 +72,6 @@ class TransactionPageState extends State<TransactionPage> {
   @override
   void initState() {
     // TODO: implement initState
-
     super.initState();
 
     focusNodeAmount.addListener(() {
@@ -53,6 +85,10 @@ class TransactionPageState extends State<TransactionPage> {
     focusNodeMemo.addListener(() {
       setState(() {});
     });
+
+    if (displayEditTransactionPage == true) {
+      editTransaction();
+    }
   }
 
   @override
@@ -73,11 +109,10 @@ class TransactionPageState extends State<TransactionPage> {
   }
 
   void updateInformationOfEnvelope(information) {
-    if(information==null){
+    if (information == null) {
       setState(() => _envelopeInformation = 'Choose envelope');
-    }else{
+    } else {
       setState(() => _envelopeInformation = information[0]);
-      
     }
   }
 
@@ -95,7 +130,7 @@ class TransactionPageState extends State<TransactionPage> {
         await Navigator.push(context, MaterialPageRoute(builder: (context) {
       return EnvelopeReorderableListView(true);
     }));
-    
+
     updateInformationOfEnvelope(information);
   }
 
@@ -105,8 +140,20 @@ class TransactionPageState extends State<TransactionPage> {
       key: _scaffoldKey,
       backgroundColor: Colors.white,
       appBar: AppBar(
-        title: Text("Add Transaction"),
+        title: displayEditTransactionPage
+            ? Text("Edit Transaction")
+            : Text("Add Transaction"),
         backgroundColor: setNaturalGreenColor(),
+        actions: <Widget>[
+          displayEditTransactionPage
+              ? IconButton(
+                  icon: Icon(Icons.delete),
+                  onPressed: () {
+                    print("delete");
+                  })
+              : Container(),
+          
+        ],
       ),
       body: ListView(
         children: <Widget>[
@@ -270,7 +317,6 @@ class TransactionPageState extends State<TransactionPage> {
                 divider(),
                 GestureDetector(
                   onTap: () {
-                    print("helo");
                     moveToDisplayEnvelopePage();
                   },
                   child: Container(
@@ -319,6 +365,7 @@ class TransactionPageState extends State<TransactionPage> {
                         .then((date) {
                       setState(() {
                         _dateTime = date;
+                        displayDate=null;
                       });
                     });
                   },
@@ -428,11 +475,13 @@ class TransactionPageState extends State<TransactionPage> {
                   height: 37,
                   minWidth: MediaQuery.of(context).size.width,
                   child: RaisedButton(
-                      child: Text("Save Transaction",
+                      child: displayEditTransactionPage ? Text("Update Transaction",
+                      style: TextStyle(fontSize: 16.0, color: Colors.white)
+                      ):
+                      Text("Save Transaction",
                           style:
                               TextStyle(fontSize: 16.0, color: Colors.white)),
                       onPressed: () {
-                        
                         transactionPageFirebaseConnection();
                       }),
                 )
@@ -486,14 +535,20 @@ class TransactionPageState extends State<TransactionPage> {
       );
 
       _scaffoldKey.currentState.showSnackBar(snackBar);
-    } else if (isSwitched==true && double.parse(amountController.text) > double.parse(information[1])) {
-      final snackBar = SnackBar(
-        content: Text('Expense amount exceeded the envelope amount. Please check the amount of your envelope and try again.'),
-        duration: Duration(seconds: 3),
-      );
+    }
 
-      _scaffoldKey.currentState.showSnackBar(snackBar);
-    }else {
+    // else if (isSwitched == true &&
+    //     double.parse(amountController.text) > double.parse(information[1])) {
+    //   final snackBar = SnackBar(
+    //     content: Text(
+    //         'Expense amount exceeded the envelope amount. Please check the amount of your envelope and try again.'),
+    //     duration: Duration(seconds: 3),
+    //   );
+
+    //   _scaffoldKey.currentState.showSnackBar(snackBar);
+    // }
+
+    else {
       try {
         LoginRegistrationPageState obj = new LoginRegistrationPageState();
         var uid = await obj.getCurrentUserId();
@@ -519,14 +574,20 @@ class TransactionPageState extends State<TransactionPage> {
         );
 
         _scaffoldKey.currentState.showSnackBar(snackBar);
-        calculation(information);
+
         clearTransactionFeild();
+
+        //Navigating to home page after pressing  save transaction button.
+        Navigator.push(context, MaterialPageRoute(builder: (context) {
+          return HomePage();
+        }));
+
+        //Navigator.of(context).pop();
       } catch (e) {
         final snackBar = SnackBar(
           content: Text('$e'),
           duration: Duration(seconds: 3),
         );
-
         _scaffoldKey.currentState.showSnackBar(snackBar);
       }
     }
@@ -545,8 +606,10 @@ class TransactionPageState extends State<TransactionPage> {
   }
 
   covertDateTime(_dateTime) {
-    if (_dateTime == null) {
+    if (_dateTime == null && displayDate == null) {
       return "Choose date";
+    } else if (displayDate is String) {
+      return "$displayDate";
     } else {
       var date = DateTime.parse("$_dateTime");
       var formattedDate = "${date.day}-${date.month}-${date.year}";
@@ -558,30 +621,36 @@ class TransactionPageState extends State<TransactionPage> {
     return Divider(color: Colors.white);
   }
 
-
   changingFocus(focusType) {
     return TextStyle(
         color: focusType.hasFocus ? setNaturalGreenColor() : Colors.grey);
   }
 
-  calculation(List information){
-    double enteredAmount = double.parse(amountController.text);
-    double envelopeAmount = double.parse(information[1]);
-    double calculatedValue;
-    //calculation for expense
-    if(isSwitched==true){
-      calculatedValue = envelopeAmount - enteredAmount;
-      print(calculatedValue);
+  editTransaction() {
+    if (transactiontype == "Expense") {
+      setState(() {
+        isSwitched = true;
+      });
+    } else if (transactiontype == "Income") {
+      setState(() {
+        isSwitched = false;
+      });
     }
 
-    //calculation for income
-    else if(isSwitched==false){
-      calculatedValue = envelopeAmount + enteredAmount;
-      print(calculatedValue);
-    }
+    amountController = TextEditingController(text: amount);
 
-    return calculatedValue; 
+    memoController = TextEditingController(text: memo);
+
+    payerOrPayeeController = TextEditingController(text: payerOrPayee);
+
+    _categoryInformation = category;
+
+    _envelopeInformation = envelope;
+
+    print(amount);
+    print(memo);
+
+    print(_categoryInformation);
+    print(_envelopeInformation);
   }
-
-
 }

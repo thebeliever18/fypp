@@ -44,7 +44,8 @@ class EnvelopeReorderableListViewState extends State<EnvelopeReorderableListView
         for (var item = 0; item < HomePageState.listEnvelopeFirestoreData.length; item++)
           ListTile(
             onTap: (){
-              Navigator.of(context).pop([HomePageState.listEnvelopeFirestoreData[item].data['Envelope Name'],HomePageState.listEnvelopeFirestoreData[item].data['Initial Value']]);
+              Navigator.of(context).pop([HomePageState.listEnvelopeFirestoreData[item].data['Envelope Name']]);
+              //HomePageState.listEnvelopeFirestoreData[item].data['Initial Value']]);
             },
             leading:  Container(
                 height: 40,
@@ -52,7 +53,7 @@ class EnvelopeReorderableListViewState extends State<EnvelopeReorderableListView
                 child:Center(child: choosingIcons(HomePageState.listEnvelopeFirestoreData[item].data['Envelope Type']),
                 )
               ),
-              trailing: Text("${HomePageState.listEnvelopeFirestoreData[item].data['Initial Value']}"),
+              //trailing: Text("${HomePageState.listEnvelopeFirestoreData[item].data['Initial Value']}"),
               title: Text("${HomePageState.listEnvelopeFirestoreData[item].data['Envelope Name']}",    
           )
           )],
