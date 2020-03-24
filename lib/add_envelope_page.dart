@@ -44,6 +44,8 @@ class AddEnvelopePageState extends State<AddEnvelopePage> {
   final _formKey = GlobalKey<FormState>();
 
   bool autoValidate;
+
+  final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
   @override
   void initState() {
     super.initState();
@@ -89,8 +91,7 @@ class AddEnvelopePageState extends State<AddEnvelopePage> {
   //variable for doing validation for dropdown box
   bool validateDropDownButton = false;
 
-
-  String hintTextForDropDownBox="Select envelope type *";
+  String hintTextForDropDownBox = "Select envelope type *";
   //setting autofocus to true
   // setAutoFocusTrue(){
   //   setState(() {
@@ -101,6 +102,7 @@ class AddEnvelopePageState extends State<AddEnvelopePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: _scaffoldKey,
       resizeToAvoidBottomInset: false,
       appBar: AppBar(
         backgroundColor: Color.fromRGBO(80, 213, 162, 1.0),
@@ -118,38 +120,79 @@ class AddEnvelopePageState extends State<AddEnvelopePage> {
             icon: Icon(Icons.check),
             onPressed: () async {
               if (_formKey.currentState.validate() && _dropDownValue != null) {
-                //Creating object of Envelope class and passing envelope name and initial value of envelope in Envelope constructor.
-                EnvelopeModel env = new EnvelopeModel(
-                    envelopeNameinputController.text,
-                    initialValueinputController.text);
+                await showDialog(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return AlertDialog(
+                        content: Text(
+                            "Are you sure you want to save this envelope?"),
+                        actions: <Widget>[
+                          FlatButton(
+                            child: Text(
+                              "Cancel",
+                              style: TextStyle(color: Colors.black),
+                            ),
+                            onPressed: () {
+                              Navigator.of(context).pop();
+                            },
+                          ),
+                          FlatButton(
+                            child: Text(
+                              "Save",
+                              style: TextStyle(color: Colors.green),
+                            ),
+                            onPressed: () async {
+                               
+                              //Creating object of Envelope class and passing envelope name and initial value of envelope in Envelope constructor.
+                              EnvelopeModel env = new EnvelopeModel(
+                                  envelopeNameinputController.text,
+                                  initialValueinputController.text);
 
-                //appending env to listEnvelope
-                addToList(env);
-                LoginRegistrationPageState obj =
-                    new LoginRegistrationPageState();
-                var uid = await obj.getCurrentUserId();
+                              //appending env to listEnvelope
+                              addToList(env);
+                              LoginRegistrationPageState obj =
+                                  new LoginRegistrationPageState();
+                              var uid = await obj.getCurrentUserId();
 
-                Firestore.instance
-                    .collection('Envelopes')
-                    .document(uid)
-                    .collection('userData')
-                    .document()
-                    .setData({
-                  'Envelope Name': envelopeNameinputController.text,
-                  'Envelope Type': namesOfDropDown[int.parse(_dropDownValue)],
-                  'Initial Value': initialValueinputController.text,
-                  'Additional notes': additionalNotesinputController.text
-                });
+                              Firestore.instance
+                                  .collection('Envelopes')
+                                  .document(uid)
+                                  .collection('userData')
+                                  .document()
+                                  .setData({
+                                'Envelope Name':
+                                    envelopeNameinputController.text,
+                                'Envelope Type':
+                                    namesOfDropDown[int.parse(_dropDownValue)],
+                                'Initial Value':
+                                    initialValueinputController.text,
+                                'Additional notes':
+                                    additionalNotesinputController.text
+                              });
 
-               
-                //Navigating to home page after pressing  check button of app bar.
-                Navigator.push(context, MaterialPageRoute(builder: (context) {
-                  return HomePage();
-                }));
+                              final snackBar = SnackBar(
+                                content: Text('Your envelope is saved.'),
+                                duration: Duration(seconds: 2),
+                              );
 
-                //clear all envelope feilds
-                clearEnvelopeFeild();
+                              _scaffoldKey.currentState.removeCurrentSnackBar();
+                              _scaffoldKey.currentState.showSnackBar(snackBar);
 
+                              Future.delayed(const Duration(seconds: 3), () {
+                                //Navigating to home page after pressing  check button of app bar.
+                                Navigator.push(context,
+                                    MaterialPageRoute(builder: (context) {
+                                  return HomePage();
+                                }));
+                              });
+
+                              //clear all envelope feilds
+                              clearEnvelopeFeild();
+                            },
+                          ),
+                        ],
+                      );
+                    });
               } else {
                 autoValidate = true;
                 setState(() {
@@ -169,15 +212,14 @@ class AddEnvelopePageState extends State<AddEnvelopePage> {
   }
 
   //clear all fields of new envelope page
-  clearEnvelopeFeild(){
-     initialValueinputController.clear();
-     envelopeNameinputController.clear();
-     additionalNotesinputController.clear();
-     setState(() {
-       hintTextForDropDownBox="Select envelope type *";
-       _dropDownValue=null;
-     });
-
+  clearEnvelopeFeild() {
+    initialValueinputController.clear();
+    envelopeNameinputController.clear();
+    additionalNotesinputController.clear();
+    setState(() {
+      hintTextForDropDownBox = "Select envelope type *";
+      _dropDownValue = null;
+    });
   }
 
   //Widget for Envelope form page design
@@ -215,7 +257,7 @@ class AddEnvelopePageState extends State<AddEnvelopePage> {
                       onChanged: (value) {
                         setState(() {
                           _dropDownValue = value;
-                          validateDropDownButton=false;
+                          validateDropDownButton = false;
                         });
                       },
                       value: _dropDownValue,
@@ -244,7 +286,8 @@ class AddEnvelopePageState extends State<AddEnvelopePage> {
                       children: <Widget>[
                         Text(
                           "Select your envelope type",
-                          style: TextStyle(color: Colors.red[700], fontSize: 12.0),
+                          style:
+                              TextStyle(color: Colors.red[700], fontSize: 12.0),
                         ),
                       ],
                     )

@@ -1,5 +1,3 @@
-
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 //import 'package:firebase_auth/firebase_auth.dart';
 
@@ -20,7 +18,7 @@ class EditEnvelopePage extends StatefulWidget {
   String envelopeType;
   String documentID;
   EditEnvelopePage(this.envelopeName, this.initialValue, this.additionalNotes,
-      this.envelopeType,this.documentID);
+      this.envelopeType, this.documentID);
   @override
   EditEnvelopePageState createState() => EditEnvelopePageState(
       this.envelopeName,
@@ -37,7 +35,7 @@ class EditEnvelopePageState extends State<EditEnvelopePage> {
   String envelopeType;
   String documentID;
   EditEnvelopePageState(this.envelopeName, this.initialValue,
-      this.additionalNotes, this.envelopeType,this.documentID);
+      this.additionalNotes, this.envelopeType, this.documentID);
 
   /*
    *  initialValueinputController is a TextEditingController of Intial Value textfield.
@@ -67,10 +65,12 @@ class EditEnvelopePageState extends State<EditEnvelopePage> {
   bool autoValidate;
 
   //boolean variable for disabling certain textfeilds
-  bool enable=true;
+  bool enable = true;
 
   //The index of envelopeType is stored in envelopeTypeIndex
   String envelopeTypeIndex;
+
+  final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
   @override
   void initState() {
     super.initState();
@@ -147,6 +147,7 @@ class EditEnvelopePageState extends State<EditEnvelopePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: _scaffoldKey,
       resizeToAvoidBottomInset: false,
       appBar: AppBar(
         backgroundColor: setNaturalGreenColor(),
@@ -161,64 +162,144 @@ class EditEnvelopePageState extends State<EditEnvelopePage> {
           icon: Icon(Icons.close),
         ),
         actions: <Widget>[
-         //delete button is displayed for all envelope name except for Cash
-         enable ? IconButton(
-              icon: Icon(Icons.delete),
-              
-              onPressed: () async{
-                
-                print("delete");
-                LoginRegistrationPageState obj =
-                    new LoginRegistrationPageState();
-                var uid = await obj.getCurrentUserId();
+          //delete button is displayed for all envelope name except for Cash
+          enable
+              ? IconButton(
+                  icon: Icon(Icons.delete),
+                  onPressed: () async {
+                    await showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return AlertDialog(
+                            content: Text(
+                                "Are you sure you want to delete $envelopeName?"),
+                            actions: <Widget>[
+                              FlatButton(
+                                child: Text(
+                                  "Cancel",
+                                  style: TextStyle(color: Colors.black),
+                                ),
+                                onPressed: () {
+                                  Navigator.of(context).pop();
+                                },
+                              ),
+                              FlatButton(
+                                child: Text(
+                                  "Delete",
+                                  style: TextStyle(color: Colors.red),
+                                ),
+                                onPressed: () async {
+                                  //Navigator.of(context).pop();
 
-                Firestore.instance
-                    .collection('Envelopes')
-                    .document(uid)
-                    .collection('userData')
-                    .document(documentID)
-                    .delete();
+                                  LoginRegistrationPageState obj =
+                                      new LoginRegistrationPageState();
+                                  var uid = await obj.getCurrentUserId();
 
-              //after deleting navigating to home page
-              Navigator.push(context, MaterialPageRoute(builder: (context) {
-                    return HomePage();
-                  }));
-              }): Container(),
-              
+                                  Firestore.instance
+                                      .collection('Envelopes')
+                                      .document(uid)
+                                      .collection('userData')
+                                      .document(documentID)
+                                      .delete();
+
+                                  final snackBar = SnackBar(
+                                    content: Text('This envelope is deleted'),
+                                    duration: Duration(seconds: 1),
+                                  );
+
+                                  _scaffoldKey.currentState
+                                      .showSnackBar(snackBar);
+
+                                  //after deleting navigating to home page
+                                  Future.delayed(const Duration(seconds: 2),
+                                      () {
+                                    Navigator.push(context,
+                                        MaterialPageRoute(builder: (context) {
+                                      return HomePage();
+                                    }));
+                                  });
+                                },
+                              ),
+                            ],
+                          );
+                        });
+                  })
+              : Container(),
+
           IconButton(
-            icon: Icon(Icons.check),
+            icon: Icon(Icons.update),
             onPressed: () async {
               if (_formKey.currentState.validate() && envelopeType != null) {
-                //Creating object of Envelope class and passing envelope name and initial value of envelope in Envelope constructor.
-                EnvelopeModel env = new EnvelopeModel(
-                    envelopeNameinputController.text,
-                    initialValueinputController.text);
+                await showDialog(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return AlertDialog(
+                        content: Text("Are you sure you want to update?"),
+                        actions: <Widget>[
+                          FlatButton(
+                            child: Text(
+                              "Cancel",
+                              style: TextStyle(color: Colors.black),
+                            ),
+                            onPressed: () {
+                              Navigator.of(context).pop();
+                            },
+                          ),
+                          FlatButton(
+                            child: Text(
+                              "Update",
+                              style: TextStyle(color: Colors.green),
+                            ),
+                            onPressed: () async {
+                              //Creating object of Envelope class and passing envelope name and initial value of envelope in Envelope constructor.
+                              EnvelopeModel env = new EnvelopeModel(
+                                  envelopeNameinputController.text,
+                                  initialValueinputController.text);
 
-                //appending env to listEnvelope
-                addToList(env);
-                LoginRegistrationPageState obj =
-                    new LoginRegistrationPageState();
-                var uid = await obj.getCurrentUserId();
+                              //appending env to listEnvelope
+                              addToList(env);
+                              LoginRegistrationPageState obj =
+                                  new LoginRegistrationPageState();
+                              var uid = await obj.getCurrentUserId();
 
-                Firestore.instance
-                    .collection('Envelopes')
-                    .document(uid)
-                    .collection('userData')
-                    .document(documentID)
-                    .updateData({
-                  'Envelope Name': envelopeNameinputController.text,
-                  'Envelope Type': namesOfDropDown[int.parse(envelopeTypeIndex)],
-                  'Initial Value': initialValueinputController.text,
-                  'Additional notes': additionalNotesinputController.text
-                });
+                              Firestore.instance
+                                  .collection('Envelopes')
+                                  .document(uid)
+                                  .collection('userData')
+                                  .document(documentID)
+                                  .updateData({
+                                'Envelope Name':
+                                    envelopeNameinputController.text,
+                                'Envelope Type': namesOfDropDown[
+                                    int.parse(envelopeTypeIndex)],
+                                'Initial Value':
+                                    initialValueinputController.text,
+                                'Additional notes':
+                                    additionalNotesinputController.text
+                              });
 
-                //Navigating to home page after updating values.
-                Navigator.push(context, MaterialPageRoute(builder: (context) {
-                  return HomePage();
-                }));
+                              final snackBar = SnackBar(
+                                content: Text('This envelope is updated'),
+                                duration: Duration(seconds: 1),
+                              );
 
-                //clear all envelope feilds
-                clearEnvelopeFeild();
+                              _scaffoldKey.currentState.showSnackBar(snackBar);
+
+                              //after deleting navigating to home page
+                              Future.delayed(const Duration(seconds: 2), () {
+                                Navigator.push(context,
+                                    MaterialPageRoute(builder: (context) {
+                                  return HomePage();
+                                }));
+                              });
+
+                              //clear all envelope feilds
+                              clearEnvelopeFeild();
+                            },
+                          ),
+                        ],
+                      );
+                    });
               } else {
                 autoValidate = true;
                 setState(() {
@@ -285,8 +366,8 @@ class EditEnvelopePageState extends State<EditEnvelopePage> {
                 children: <Widget>[
                   Container(
                     child: IgnorePointer(
-                       //If envelope name is Cash then drop down button is disabled else enabled
-                      ignoring: enable ? false:true,
+                      //If envelope name is Cash then drop down button is disabled else enabled
+                      ignoring: enable ? false : true,
                       child: DropdownButton(
                         isExpanded: true,
                         onChanged: (value) {

@@ -4,7 +4,6 @@ import 'package:expense_tracker_app/envelope_reorderable_listview.dart';
 import 'package:expense_tracker_app/home_page.dart';
 import 'package:expense_tracker_app/login_registration_page.dart';
 import 'package:expense_tracker_app/transaction_module/display_category_page.dart';
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -12,7 +11,15 @@ import 'package:flutter/material.dart';
 class TransactionPage extends StatefulWidget {
   bool displayEditTransactionPage;
 
-  String amount, memo, transactiontype, payerOrPayee, category, envelope, displayDate;
+  String amount,
+      memo,
+      transactiontype,
+      payerOrPayee,
+      category,
+      envelope,
+      displayDate,
+      documentID,
+      uid;
   TransactionPage(
       [this.displayEditTransactionPage,
       this.amount,
@@ -21,7 +28,9 @@ class TransactionPage extends StatefulWidget {
       this.payerOrPayee,
       this.category,
       this.envelope,
-      this.displayDate]);
+      this.displayDate,
+      this.documentID,
+      this.uid]);
   @override
   TransactionPageState createState() => TransactionPageState(
       this.displayEditTransactionPage,
@@ -31,12 +40,22 @@ class TransactionPage extends StatefulWidget {
       this.payerOrPayee,
       this.category,
       this.envelope,
-      this.displayDate);
+      this.displayDate,
+      this.documentID,
+      this.uid);
 }
 
 class TransactionPageState extends State<TransactionPage> {
   bool displayEditTransactionPage;
-  String amount, memo, transactiontype, payerOrPayee, category, envelope, displayDate;
+  String amount,
+      memo,
+      transactiontype,
+      payerOrPayee,
+      category,
+      envelope,
+      displayDate,
+      documentID,
+      uid;
   TransactionPageState(
       this.displayEditTransactionPage,
       this.amount,
@@ -45,7 +64,9 @@ class TransactionPageState extends State<TransactionPage> {
       this.payerOrPayee,
       this.category,
       this.envelope,
-      this.displayDate);
+      this.displayDate,
+      this.documentID,
+      this.uid);
 
   //bool isSwitched for changing the state of switch
   bool isSwitched = false;
@@ -61,6 +82,8 @@ class TransactionPageState extends State<TransactionPage> {
 
   //
   DateTime _dateTime;
+
+  String buttonText = "Save Transaction";
 
   var amountController = TextEditingController();
   var payerOrPayeeController = TextEditingController();
@@ -148,11 +171,59 @@ class TransactionPageState extends State<TransactionPage> {
           displayEditTransactionPage
               ? IconButton(
                   icon: Icon(Icons.delete),
-                  onPressed: () {
-                    print("delete");
+                  onPressed: () async {
+                    await showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return AlertDialog(
+                            content: Text("Are you sure you want to delete?"),
+                            actions: <Widget>[
+                              FlatButton(
+                                child: Text(
+                                  "Cancel",
+                                  style: TextStyle(color: Colors.black),
+                                ),
+                                onPressed: () {
+                                  Navigator.of(context).pop();
+                                },
+                              ),
+                              FlatButton(
+                                child: Text(
+                                  "Delete",
+                                  style: TextStyle(color: Colors.red),
+                                ),
+                                onPressed: () async {
+                                  Firestore.instance
+                                      .collection('Transactions')
+                                      .document(uid)
+                                      .collection('transactionData')
+                                      .document(documentID)
+                                      .delete();
+
+                                  final snackBar = SnackBar(
+                                    content:
+                                        Text('Your transaction is deleted'),
+                                    duration: Duration(seconds: 1),
+                                  );
+
+                                  _scaffoldKey.currentState
+                                      .showSnackBar(snackBar);
+
+                                  //after deleting navigating to home page
+                                  Future.delayed(const Duration(seconds: 2),
+                                      () {
+                                    Navigator.push(context,
+                                        MaterialPageRoute(builder: (context) {
+                                      return HomePage();
+                                    }));
+                                  });
+                                },
+                              ),
+                            ],
+                          );
+                        });
                   })
               : Container(),
-          
         ],
       ),
       body: ListView(
@@ -365,7 +436,7 @@ class TransactionPageState extends State<TransactionPage> {
                         .then((date) {
                       setState(() {
                         _dateTime = date;
-                        displayDate=null;
+                        displayDate = null;
                       });
                     });
                   },
@@ -475,10 +546,7 @@ class TransactionPageState extends State<TransactionPage> {
                   height: 37,
                   minWidth: MediaQuery.of(context).size.width,
                   child: RaisedButton(
-                      child: displayEditTransactionPage ? Text("Update Transaction",
-                      style: TextStyle(fontSize: 16.0, color: Colors.white)
-                      ):
-                      Text("Save Transaction",
+                      child: Text("$buttonText",
                           style:
                               TextStyle(fontSize: 16.0, color: Colors.white)),
                       onPressed: () {
@@ -494,10 +562,145 @@ class TransactionPageState extends State<TransactionPage> {
   }
 
   transactionPageFirebaseConnection() async {
+    saveOrUpdateTransaction() async {
+      try {
+        var snackBar;
+        LoginRegistrationPageState obj = new LoginRegistrationPageState();
+        var uid = await obj.getCurrentUserId();
+
+        if (buttonText == "Save Transaction") {
+          await showDialog(
+              context: context,
+              builder: (BuildContext context) {
+                return AlertDialog(
+                  content:
+                      Text("Are you sure you want to save the transaction?"),
+                  actions: <Widget>[
+                    FlatButton(
+                      child: Text(
+                        "Cancel",
+                        style: TextStyle(color: Colors.black),
+                      ),
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                      },
+                    ),
+                    FlatButton(
+                      child: Text(
+                        "Save",
+                        style: TextStyle(color: Colors.green),
+                      ),
+                      onPressed: () async {
+                        Navigator.of(context).pop();
+                        Firestore.instance
+                            .collection('Transactions')
+                            .document(uid)
+                            .collection('transactionData')
+                            .document()
+                            .setData({
+                          'Transaction Type': isSwitched ? "Expense" : "Income",
+                          'Amount': amountController.text,
+                          isSwitched ? 'Payee' : 'Payer':
+                              payerOrPayeeController.text,
+                          'Category': _categoryInformation,
+                          'Envelope': _envelopeInformation,
+                          'Date': covertDateTime(_dateTime),
+                          'Memo': memoController.text,
+                        });
+
+                        snackBar = SnackBar(
+                          content: Text('Your transaction is saved'),
+                          duration: Duration(seconds: 2),
+                        );
+                      },
+                    ),
+                  ],
+                );
+              });
+        } else if (buttonText == "Update Transaction") {
+          await showDialog(
+              context: context,
+              builder: (BuildContext context) {
+                return AlertDialog(
+                  content: Text("Are you sure you want to update?"),
+                  actions: <Widget>[
+                    FlatButton(
+                      child: Text(
+                        "Cancel",
+                        style: TextStyle(color: Colors.black),
+                      ),
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                      },
+                    ),
+                    FlatButton(
+                      child: Text(
+                        "Update",
+                        style: TextStyle(color: Colors.green),
+                      ),
+                      onPressed: () async {
+                        Navigator.of(context).pop();
+                        Firestore.instance
+                            .collection('Transactions')
+                            .document(uid)
+                            .collection('transactionData')
+                            .document(documentID)
+                            .updateData({
+                          'Transaction Type': isSwitched ? "Expense" : "Income",
+                          'Amount': amountController.text,
+                          isSwitched ? 'Payee' : 'Payer':
+                              payerOrPayeeController.text,
+                          'Category': _categoryInformation,
+                          'Envelope': _envelopeInformation,
+                          'Date': covertDateTime(_dateTime),
+                          'Memo': memoController.text,
+                        });
+                        snackBar = SnackBar(
+                          content: Text('Your transaction is updated'),
+                          duration: Duration(seconds: 2),
+                        );
+                      },
+                    ),
+                  ],
+                );
+              });
+        }
+
+        _scaffoldKey.currentState.removeCurrentSnackBar();
+        _scaffoldKey.currentState.showSnackBar(snackBar);
+
+        clearTransactionFeild();
+
+        //Navigating to home page after pressing  save transaction button.
+        Future.delayed(const Duration(seconds: 3), () {
+          Navigator.push(context, MaterialPageRoute(builder: (context) {
+            return HomePage();
+          }));
+        });
+
+        //Navigator.of(context).pop();
+      } catch (e) {
+        final snackBar = SnackBar(
+          content: Text('$e'),
+          duration: Duration(seconds: 3),
+        );
+        _scaffoldKey.currentState.showSnackBar(snackBar);
+        _scaffoldKey.currentState.removeCurrentSnackBar();
+      }
+    }
+
     //validation
     if (amountController.text.isEmpty) {
       final snackBar = SnackBar(
         content: Text('Please enter the amount'),
+        duration: Duration(seconds: 3),
+      );
+
+      // Find the Scaffold in the widget tree and use it to show a SnackBar.
+      _scaffoldKey.currentState.showSnackBar(snackBar);
+    } else if (double.tryParse(amountController.text) is! double) {
+      final snackBar = SnackBar(
+        content: Text('Please enter number not text in amount'),
         duration: Duration(seconds: 3),
       );
 
@@ -535,61 +738,42 @@ class TransactionPageState extends State<TransactionPage> {
       );
 
       _scaffoldKey.currentState.showSnackBar(snackBar);
-    }
+    } else if (isSwitched == true &&
+        _envelopeInformation != "Choose envelope" && buttonText=="Save Transaction") {
+      var snackBar;
+      var returnedValue = calculationForTheValidationOfAmount(
+          _envelopeInformation, double.parse(information[1]));
 
-    // else if (isSwitched == true &&
-    //     double.parse(amountController.text) > double.parse(information[1])) {
-    //   final snackBar = SnackBar(
-    //     content: Text(
-    //         'Expense amount exceeded the envelope amount. Please check the amount of your envelope and try again.'),
-    //     duration: Duration(seconds: 3),
-    //   );
-
-    //   _scaffoldKey.currentState.showSnackBar(snackBar);
-    // }
-
-    else {
-      try {
-        LoginRegistrationPageState obj = new LoginRegistrationPageState();
-        var uid = await obj.getCurrentUserId();
-
-        Firestore.instance
-            .collection('Transactions')
-            .document(uid)
-            .collection('transactionData')
-            .document()
-            .setData({
-          'Transaction Type': isSwitched ? "Expense" : "Income",
-          'Amount': amountController.text,
-          isSwitched ? 'Payee' : 'Payer': payerOrPayeeController.text,
-          'Category': _categoryInformation,
-          'Envelope': _envelopeInformation,
-          'Date': covertDateTime(_dateTime),
-          'Memo': memoController.text,
-        });
-
-        final snackBar = SnackBar(
-          content: Text('Your transaction is saved'),
-          duration: Duration(seconds: 3),
-        );
-
-        _scaffoldKey.currentState.showSnackBar(snackBar);
-
-        clearTransactionFeild();
-
-        //Navigating to home page after pressing  save transaction button.
-        Navigator.push(context, MaterialPageRoute(builder: (context) {
-          return HomePage();
-        }));
-
-        //Navigator.of(context).pop();
-      } catch (e) {
-        final snackBar = SnackBar(
-          content: Text('$e'),
+      //if no transaction is done yet in a specific envelope
+      if (returnedValue == "No transaction") {
+        //checking entered amount with the initial amount of the envelope
+        if (double.parse(amountController.text) >
+            double.parse(information[1])) {
+          snackBar = SnackBar(
+            content: Text(
+                'Expense amount exceeded. Please check the amount and try again.'),
+            duration: Duration(seconds: 3),
+          );
+          _scaffoldKey.currentState.showSnackBar(snackBar);
+        } else if (double.parse(amountController.text) <
+            double.parse(information[1])) {
+          saveOrUpdateTransaction();
+        }
+        //checking entered amount with the calculated transaction amount
+      } else if (double.parse(amountController.text) > returnedValue) {
+        snackBar = SnackBar(
+          content: Text(
+              'Expense amount exceeded. Please check the amount and try again.'),
           duration: Duration(seconds: 3),
         );
         _scaffoldKey.currentState.showSnackBar(snackBar);
+      } else if (double.parse(amountController.text) < returnedValue) {
+        saveOrUpdateTransaction();
       }
+
+      
+    } else {
+      saveOrUpdateTransaction();
     }
   }
 
@@ -646,6 +830,8 @@ class TransactionPageState extends State<TransactionPage> {
     _categoryInformation = category;
 
     _envelopeInformation = envelope;
+
+    buttonText = "Update Transaction";
 
     print(amount);
     print(memo);

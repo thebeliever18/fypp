@@ -26,10 +26,10 @@ class CatagoriesState extends State<Catagories> {
   String uid;
 
   //variable for storing data of category
-   List listOfCategory;
+  List listOfCategory;
 
   //variable for storing length of the array of a category
-   var lengthOfCategory;
+  var lengthOfCategory;
 
   //
   String categoryDocumentId;
@@ -55,23 +55,16 @@ class CatagoriesState extends State<Catagories> {
     getUserIdForCategory();
   }
 
- @override
- void didChangeDependencies(){
-   super.didChangeDependencies();
-  
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+  }
 
- }
- 
-  
-   @override
-  void dispose(){
-    
-   
-    
+  @override
+  void dispose() {
     super.dispose();
   }
 
-  
   //
   getUserIdForCategory() async {
     LoginRegistrationPageState obj = new LoginRegistrationPageState();
@@ -100,15 +93,11 @@ class CatagoriesState extends State<Catagories> {
 
     print(lengthOfCategory);
 
-    
-    
-       if (lengthOfCategory != null) {
+    if (lengthOfCategory != null) {
       setState(() {
         showData = true;
       });
     }
-    
-   
   }
 
   //if category list is empty then categories are added
@@ -124,10 +113,9 @@ class CatagoriesState extends State<Catagories> {
   }
 
   @override
-  Widget build(  BuildContext context) {
+  Widget build(BuildContext context) {
     return Scaffold(
-      
-      key:_scaffoldKey,
+        key: _scaffoldKey,
         appBar: AppBar(
           title: Text("Category list"),
           backgroundColor: setNaturalGreenColor(),
@@ -141,17 +129,15 @@ class CatagoriesState extends State<Catagories> {
                 })
           ],
         ),
-        body: Builder(
-          builder:(BuildContext context){
-            return titleOfCategory(context);
-          } 
-          ));
+        body: Builder(builder: (BuildContext context) {
+          return titleOfCategory(context);
+        }));
   }
 
   Widget titleOfCategory(context) {
     //showData is true then all the data are displayed in user interface
     if (showData == true) {
-      return  ListView(children: <Widget>[
+      return ListView(children: <Widget>[
         for (var i = 0; i < lengthOfCategory; i++)
           Dismissible(
             key: ValueKey(i),
@@ -208,6 +194,13 @@ class CatagoriesState extends State<Catagories> {
                                 getUserIdForCategory();
                               });
                               Navigator.of(context).pop();
+
+                              final snackBar = SnackBar(
+                                content: Text('The category is deleted'),
+                                duration: Duration(seconds: 1),
+                              );
+
+                              _scaffoldKey.currentState.showSnackBar(snackBar);
                             },
                           ),
                         ],
@@ -239,7 +232,7 @@ class CatagoriesState extends State<Catagories> {
                             onPressed: () {
                               var itemToBeEdited =
                                   listOfCategory[0].data["Category Name"][i];
-                              
+
                               //Controller for editing
                               itemToBeEditedController =
                                   TextEditingController(text: itemToBeEdited);
@@ -247,11 +240,13 @@ class CatagoriesState extends State<Catagories> {
                               //Controller for deleting
                               itemToBeDeletedController =
                                   TextEditingController(text: itemToBeEdited);
-                              
 
                               Navigator.of(context).pop();
-                              addCategory("Edit", itemToBeEditedController, i,itemToBeDeletedController);
+                              addCategory("Edit", itemToBeEditedController, i,
+                                  itemToBeDeletedController);
                               //Navigator.of(context).pop();
+
+                              
                             },
                           ),
                         ],
@@ -276,7 +271,7 @@ class CatagoriesState extends State<Catagories> {
       ]);
     }
     return Center(child: CircularProgressIndicator());
-}
+  }
 
   Future addCategory([
     String title,
@@ -309,30 +304,30 @@ class CatagoriesState extends State<Catagories> {
                       //               listOfCategory[0].data["Category Name"][index];
                       //           print("itemToBeedited is" + itemToBeEdited);
                       if (itemToBeEdited.text.isEmpty) {
-                        final snackBar =
-                            SnackBar(content: Text('Please enter the value to be edited.'),
-                            duration: Duration(seconds: 3),);
+                        final snackBar = SnackBar(
+                          content: Text('Please enter the value to be edited.'),
+                          duration: Duration(seconds: 3),
+                        );
 
-                            // Find the Scaffold in the widget tree and use it to show a SnackBar.
-                            _scaffoldKey.currentState.showSnackBar(snackBar);
-                            
-                        
+                        // Find the Scaffold in the widget tree and use it to show a SnackBar.
+                        _scaffoldKey.currentState.showSnackBar(snackBar);
                       } else {
-
-                        var delVal = []; //blank list for adding elements which you want to delete
+                        var delVal =
+                            []; //blank list for adding elements which you want to delete
                         delVal.add('${itemToBeDeleted.text}');
 
                         //First deleting editing value
-                              Firestore.instance
-                                  .collection('Categories')
-                                  .document(uid)
-                                  .collection('categoriesData')
-                                  .document(categoryDocumentId)
-                                  .updateData({
-                                "Category Name": FieldValue.arrayRemove(delVal)
-                              });
+                        Firestore.instance
+                            .collection('Categories')
+                            .document(uid)
+                            .collection('categoriesData')
+                            .document(categoryDocumentId)
+                            .updateData({
+                          "Category Name": FieldValue.arrayRemove(delVal)
+                        });
 
-                        var editVal = []; //blank list for adding elements which you want to edit
+                        var editVal =
+                            []; //blank list for adding elements which you want to edit
                         editVal.add('${itemToBeEdited.text}');
                         //editing the value
                         Firestore.instance
@@ -345,20 +340,28 @@ class CatagoriesState extends State<Catagories> {
                             "Category Name": FieldValue.arrayUnion(editVal),
                           },
                         );
-                         _scaffoldKey.currentState.removeCurrentSnackBar();
+                        _scaffoldKey.currentState.removeCurrentSnackBar();
                         Navigator.of(context).pop();
                         getUserIdForCategory();
+
+                        final snackBar = SnackBar(
+                                content: Text('The category is edited'),
+                                duration: Duration(seconds: 1),
+                              );
+
+                              _scaffoldKey.currentState.showSnackBar(snackBar);
                       }
                     } else if (title == "Add") {
                       if (itemToBeAddedController.text.isEmpty) {
                         //  BuildContext newcontext=context;
                         // Scaffold.of(newcontext).showSnackBar(displaySnackBar("Please enter value to be added"));
-                         final snackBar =
-                            SnackBar(content: Text('Please enter the value to be added.'),
+                        final snackBar = SnackBar(
+                            content:
+                                Text('Please enter the value to be added.'),
                             duration: Duration(seconds: 3));
 
-                            // Find the Scaffold in the widget tree and use it to show a SnackBar.
-                            _scaffoldKey.currentState.showSnackBar(snackBar);
+                        // Find the Scaffold in the widget tree and use it to show a SnackBar.
+                        _scaffoldKey.currentState.showSnackBar(snackBar);
                       } else {
                         var val =
                             []; //blank list for add elements which you want to delete
@@ -377,9 +380,17 @@ class CatagoriesState extends State<Catagories> {
                             "Category Name": FieldValue.arrayUnion(val),
                           },
                         );
-                         _scaffoldKey.currentState.removeCurrentSnackBar();
+                        _scaffoldKey.currentState.removeCurrentSnackBar();
                         Navigator.of(context).pop();
                         getUserIdForCategory();
+
+                        final snackBar = SnackBar(
+                            content:
+                                Text('New Category is added'),
+                            duration: Duration(seconds: 1));
+
+                        
+                        _scaffoldKey.currentState.showSnackBar(snackBar);
                       }
                     }
                   },

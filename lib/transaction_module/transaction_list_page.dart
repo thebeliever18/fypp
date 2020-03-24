@@ -85,6 +85,8 @@ class TransactionListPageState extends State<TransactionListPage> {
                       listOfTransaction[i].data['Category'],
                       listOfTransaction[i].data['Envelope'],
                       listOfTransaction[i].data['Date'],
+                      listOfTransaction[i].documentID,
+                      uid
                       );
                     }));
                   },

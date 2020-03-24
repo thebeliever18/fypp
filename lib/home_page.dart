@@ -6,6 +6,8 @@ import 'package:expense_tracker_app/categories.dart';
 import 'package:expense_tracker_app/envelope_reorderable_listview.dart';
 import 'package:expense_tracker_app/login_registration_page.dart';
 import 'package:expense_tracker_app/envelope_model.dart';
+import 'package:expense_tracker_app/shopping_module/shopping_list_page.dart';
+
 
 import 'package:expense_tracker_app/transaction_module/transaction_list_page.dart';
 import 'package:expense_tracker_app/transaction_module/transaction_page.dart';
@@ -26,13 +28,23 @@ void addToList(EnvelopeModel data) {
 
 //Class for HomePage
 class HomePage extends StatefulWidget {
+  String message;
+  HomePage([this.message]);
   @override
   State<StatefulWidget> createState() {
-    return HomePageState();
+    return HomePageState(this.message);
   }
 }
 
+var listOfTransaction;
+bool displayDataForCalculation = false;
+
 class HomePageState extends State<HomePage> {
+  String message;
+  HomePageState([this.message]);
+
+  String returnText;
+
   //_scaffoldKey is a global key that is unique across the entire app.
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
 
@@ -72,8 +84,6 @@ class HomePageState extends State<HomePage> {
     //print(listEnvelopeFirestoreData[0].data['Initial Value']);
   }
 
-  bool displayDataForCalculation = false;
-  var listOfTransaction;
   getTransactionsData() async {
     LoginRegistrationPageState obj = new LoginRegistrationPageState();
     var uid = await obj.getCurrentUserId();
@@ -186,10 +196,6 @@ class HomePageState extends State<HomePage> {
                   return TransactionPage(false);
                 }));
               }),
-          // Icon(
-          //   Icons.add,
-          //   size: 30,
-          // ),
           IconButton(
               icon: Icon(
                 Icons.pie_chart,
@@ -244,7 +250,7 @@ class HomePageState extends State<HomePage> {
                 SizedBox(
                   height: 10.0,
                 ),
-                wrapEnvelop(true)
+                wrapEnvelop(true),
               ],
             ),
           ),
@@ -321,7 +327,7 @@ class HomePageState extends State<HomePage> {
   }
 
   calculation(String title, String text) {
-    String returnText = 'none';
+    returnText = "No Transaction";
     double envelopeAmount = double.parse(text);
     bool displayCalculatedValue = false;
 
@@ -329,12 +335,12 @@ class HomePageState extends State<HomePage> {
       for (var i = 0; i < listOfTransaction.length; i++) {
         if (title == listOfTransaction[i].data['Envelope']) {
           if (listOfTransaction[i].data['Transaction Type'] == "Income") {
-            envelopeAmount =
-                envelopeAmount + double.parse(listOfTransaction[i].data['Amount']);
+            envelopeAmount = envelopeAmount +
+                double.parse(listOfTransaction[i].data['Amount']);
           } else if (listOfTransaction[i].data['Transaction Type'] ==
               "Expense") {
-            envelopeAmount =
-                envelopeAmount - double.parse(listOfTransaction[i].data['Amount']);
+            envelopeAmount = envelopeAmount -
+                double.parse(listOfTransaction[i].data['Amount']);
           }
           print(envelopeAmount);
           print("$title");
@@ -345,7 +351,7 @@ class HomePageState extends State<HomePage> {
         } else {
           if (displayCalculatedValue == false) {
             setState(() {
-              returnText = "no val";
+              returnText = "No Transaction";
             });
           }
         }
@@ -353,7 +359,6 @@ class HomePageState extends State<HomePage> {
     } else if ((displayDataForCalculation == false)) {
       return returnText;
     }
-
     return returnText;
   }
 
@@ -393,6 +398,32 @@ class HomePageState extends State<HomePage> {
   }
 }
 
+calculationForTheValidationOfAmount(String envelopeName, double initialAmount) {
+  bool displayCalculatedValue = false;
+  if (displayDataForCalculation == true) {
+    for (var i = 0; i < listOfTransaction.length; i++) {
+      if (envelopeName == listOfTransaction[i].data['Envelope']) {
+        if (listOfTransaction[i].data['Transaction Type'] == "Income") {
+          initialAmount =
+              initialAmount + double.parse(listOfTransaction[i].data['Amount']);
+        } else if (listOfTransaction[i].data['Transaction Type'] == "Expense") {
+          initialAmount =
+              initialAmount - double.parse(listOfTransaction[i].data['Amount']);
+        }
+
+        displayCalculatedValue = true;
+      } else {
+        if (displayCalculatedValue == false) {
+          return "No transaction";
+        }
+      }
+    }
+  } else if ((displayDataForCalculation == false)) {
+    return initialAmount;
+  }
+  return initialAmount;
+}
+
 //Widget for addEnvelope conatiner
 
 //Decoration of Drawer
@@ -430,7 +461,17 @@ drawerItems(context) {
             return Catagories();
           }));
         },
-      )
+      ),
+      ListTile(
+        leading: Icon(Icons.shopping_basket),
+        title: Text("Shopping lists"),
+        onTap: () {
+          //Navigating to shopping list page
+          Navigator.push(context, MaterialPageRoute(builder: (context) {
+            return ShoppingListPage();
+          }));
+        },
+      ),
     ],
   );
 }
