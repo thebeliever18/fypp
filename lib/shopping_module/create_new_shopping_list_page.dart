@@ -1,7 +1,10 @@
 import 'package:expense_tracker_app/decorations.dart';
+import 'package:expense_tracker_app/shopping_module/items_list.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
+
+//Page for writing and creating name of your shopping list
 class CreateNewShoppingListPage extends StatefulWidget {
   @override
   CreateNewShoppingListPageState createState() =>
@@ -9,7 +12,6 @@ class CreateNewShoppingListPage extends StatefulWidget {
 }
 
 class CreateNewShoppingListPageState extends State<CreateNewShoppingListPage> {
-
   FocusNode focusNodeNameOfShoppingList = new FocusNode();
 
   @override
@@ -28,6 +30,7 @@ class CreateNewShoppingListPageState extends State<CreateNewShoppingListPage> {
     super.dispose();
     focusNodeNameOfShoppingList.dispose();
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -71,13 +74,12 @@ class CreateNewShoppingListPageState extends State<CreateNewShoppingListPage> {
             height: 20.0,
           ),
           Container(
-          width: 290,
-          child: TextField(
-            focusNode: focusNodeNameOfShoppingList,
-            keyboardType: TextInputType.text,
-            autofocus: true,
-            decoration: InputDecoration(
-                
+            width: 290,
+            child: TextField(
+              focusNode: focusNodeNameOfShoppingList,
+              keyboardType: TextInputType.text,
+              autofocus: true,
+              decoration: InputDecoration(
                 focusedBorder: setFocusedBorder(),
                 //Underline color of text field
                 filled: true,
@@ -85,21 +87,26 @@ class CreateNewShoppingListPageState extends State<CreateNewShoppingListPage> {
                 labelText: "Name",
                 hintText: "Name your list",
                 labelStyle: changingFocus(focusNodeNameOfShoppingList),
-                ),
+              ),
+            ),
           ),
-        ),
-        SizedBox(
+          SizedBox(
             height: 20.0,
           ),
           ButtonTheme(
-            minWidth:290,
+            minWidth: 290,
             height: 37,
             child: RaisedButton(
-              
-              onPressed: () {},
+              onPressed: () {
+
+                //navigating to the page which contains different item to be purchased
+                Navigator.push(context, MaterialPageRoute(builder: (context) {
+                  return ItemsList();
+                }));
+              },
               child: Text(
                 "CREATE LIST",
-                style: TextStyle(fontSize: 16.0,color: Colors.white),
+                style: TextStyle(fontSize: 16.0, color: Colors.white),
               ),
               color: setNaturalGreenColor(),
             ),
@@ -113,5 +120,4 @@ class CreateNewShoppingListPageState extends State<CreateNewShoppingListPage> {
     return TextStyle(
         color: focusType.hasFocus ? setNaturalGreenColor() : Colors.grey);
   }
-  
 }
