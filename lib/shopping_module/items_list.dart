@@ -60,6 +60,49 @@ class ItemsListState extends State<ItemsList> {
           title: Text("title"),
           backgroundColor: setNaturalGreenColor(),
           actions: [popupMenuButton()]),
+          body: itemsListBody(),
+    );
+  }
+
+  itemsListBody(){
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.end,
+      crossAxisAlignment: CrossAxisAlignment.end,
+      children:<Widget>[
+         Row(
+           mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: <Widget>[
+              Container(
+                width: 150,
+                child: TextField(
+                  keyboardType: TextInputType.text,
+                  autofocus: true,
+                  decoration: InputDecoration(
+                    focusedBorder: setFocusedBorder(),
+                    //Underline color of text field
+                    filled: true,
+                    fillColor: Colors.grey[300],
+                    hintText: "Item Name",
+                  ),
+                ),
+              ),
+              Container(
+                width: 150,
+                child: TextField(
+                  keyboardType: TextInputType.number,
+                  autofocus: true,
+                  decoration: InputDecoration(
+                    focusedBorder: setFocusedBorder(),
+                    //Underline color of text field
+                    filled: true,
+                    fillColor: Colors.grey[300],
+                    hintText: "Price",
+                  ),
+                ),
+              ),
+            ],
+          ),   
+      ]
     );
   }
 }
