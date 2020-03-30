@@ -3,7 +3,6 @@ import 'package:expense_tracker_app/shopping_module/items_list.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-
 //Page for writing and creating name of your shopping list
 class CreateNewShoppingListPage extends StatefulWidget {
   @override
@@ -13,7 +12,9 @@ class CreateNewShoppingListPage extends StatefulWidget {
 
 class CreateNewShoppingListPageState extends State<CreateNewShoppingListPage> {
   FocusNode focusNodeNameOfShoppingList = new FocusNode();
-
+  bool autoValidate=false;
+  final _formKey = GlobalKey<FormState>();
+   
   @override
   void initState() {
     // TODO: implement initState
@@ -44,7 +45,7 @@ class CreateNewShoppingListPageState extends State<CreateNewShoppingListPage> {
             }),
       ),
       body: createNewShoppingListPageBody(),
-    );
+      );
   }
 
   createNewShoppingListPageBody() {
@@ -73,20 +74,30 @@ class CreateNewShoppingListPageState extends State<CreateNewShoppingListPage> {
           SizedBox(
             height: 20.0,
           ),
-          Container(
-            width: 290,
-            child: TextField(
-              focusNode: focusNodeNameOfShoppingList,
-              keyboardType: TextInputType.text,
-              autofocus: true,
-              decoration: InputDecoration(
-                focusedBorder: setFocusedBorder(),
-                //Underline color of text field
-                filled: true,
-                fillColor: Colors.grey[300],
-                labelText: "Name",
-                hintText: "Name your list",
-                labelStyle: changingFocus(focusNodeNameOfShoppingList),
+          Form(
+            key: _formKey,
+            child: Container(
+              width: 290,
+              child: TextFormField(
+                autovalidate: autoValidate,
+                validator: (value) {
+                  if (value.isEmpty) {
+                    return 'Please enter name of your list';
+                  }
+                  return null;
+                },
+                focusNode: focusNodeNameOfShoppingList,
+                keyboardType: TextInputType.text,
+                autofocus: true,
+                decoration: InputDecoration(
+                  focusedBorder: setFocusedBorder(),
+                  //Underline color of text field
+                  filled: true,
+                  fillColor: Colors.grey[300],
+                  labelText: "Name",
+                  hintText: "Name your list",
+                  labelStyle: changingFocus(focusNodeNameOfShoppingList),
+                ),
               ),
             ),
           ),
@@ -98,11 +109,16 @@ class CreateNewShoppingListPageState extends State<CreateNewShoppingListPage> {
             height: 37,
             child: RaisedButton(
               onPressed: () {
-
-                //navigating to the page which contains different item to be purchased
-                Navigator.push(context, MaterialPageRoute(builder: (context) {
-                  return ItemsList();
-                }));
+                if (_formKey.currentState.validate()) {
+                  //navigating to the page which contains different item to be purchased
+                  Navigator.push(context, MaterialPageRoute(builder: (context) {
+                    return ItemsList();
+                  }));
+                }else{
+                  setState(() {
+                      autoValidate=true;
+                  });
+                }
               },
               child: Text(
                 "CREATE LIST",
