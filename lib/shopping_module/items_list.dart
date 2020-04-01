@@ -10,6 +10,7 @@ int count = 0;
 int i;
 int an;
 
+final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
 //Method for appending data to the ShoppingListModel
 void addToShoppingList(ShoppingListModel data) {
   shoppingList.add(data);
@@ -88,10 +89,17 @@ class ItemsListState extends State<ItemsList> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+        key: _scaffoldKey,
         appBar: AppBar(
             title: Text("title"),
             backgroundColor: setNaturalGreenColor(),
-            actions: [popupMenuButton()]),
+            actions: [
+              IconButton(icon: Icon(Icons.save), 
+              onPressed: (){
+                
+              }),
+              popupMenuButton()
+              ]),
         body: itemsListBody(),
         floatingActionButton: showFloatingActionButton
             ? FloatingActionButton(
@@ -162,10 +170,10 @@ class ItemsListState extends State<ItemsList> {
                           controller: priceController,
                           autovalidate: autovalidate,
                           validator: (value) {
-                            if (value.isEmpty) {
-                              return 'Please enter price';
-                            } else if (double.tryParse(value) is! double) {
-                              return 'Enter number not text';
+                            if (value.isNotEmpty) {
+                              if (double.tryParse(value) is! double) {
+                                return 'Enter number not text';
+                              }
                             }
                             return null;
                           },
@@ -277,32 +285,112 @@ class ItemsListState extends State<ItemsList> {
             rows: shoppingList
                 .map(
                   (itmDetl) => DataRow(
-                    
                       selected: selectedShoppingItems.contains(itmDetl),
-                      
                       onSelectChanged: (b) {
                         print("Onselect");
                         onSelectedRow(b, itmDetl);
                       },
                       cells: [
-                        DataCell( 
-                          Text(itmDetl.itemName,
-                              style: TextStyle(
-                                  fontSize: 15.0, color: Colors.grey[700])),
+                        //data cell for item name
+                        DataCell(
+                          TextFormField(
+                            controller: setItemNameController(itmDetl.itemName),
+                            decoration: InputDecoration(
+                              border: InputBorder.none,
+                            ),
+                            textInputAction: TextInputAction.done,
+                            onFieldSubmitted: (term) {
+                              //checking if updated text is empty or not
+                              if (term.isEmpty) {
+                                final snackBar = SnackBar(
+                                  content: Text('Item name cannot be empty'),
+                                  duration: Duration(seconds: 3),
+                                );
+
+                                //setting previous value of textfeild
+                                setState(() {
+                                  setItemNameController(itmDetl.itemName);
+                                });
+
+                                // Find the Scaffold in the widget tree and use it to show a SnackBar.
+                                _scaffoldKey.currentState
+                                    .showSnackBar(snackBar);
+                              }
+
+                              //checking if updated text is string or not
+                              else if (double.tryParse(term) is double) {
+                                final snackBar = SnackBar(
+                                  content: Text('Item name cannot be number'),
+                                  duration: Duration(seconds: 3),
+                                );
+
+                                //setting previous value of textfeild
+                                setState(() {
+                                  setItemNameController(itmDetl.itemName);
+                                });
+
+                                // Find the Scaffold in the widget tree and use it to show a SnackBar.
+                                _scaffoldKey.currentState
+                                    .showSnackBar(snackBar);
+
+                                //_scaffoldKey.currentState.removeCurrentSnackBar();
+                              } else {
+                                itmDetl.itemName = term;
+                              }
+                            },
+                          ),
                           showEditIcon: true,
                           onTap: () {
                             print('Selected ${itmDetl.itemName}');
+
+                            print("Display list ${shoppingList[2].itemName}");
                           },
                         ),
-                        DataCell(
-                          Text(itmDetl.price,
-                              style: TextStyle(
-                                  fontSize: 15.0, color: Colors.grey[700])),
-                                  showEditIcon: true,
-                                  onTap: (){
 
+                        //data cell for price
+                        DataCell(
+                            TextFormField(
+                              controller: setPriceController(itmDetl.price),
+                              decoration: InputDecoration(
+                                border: InputBorder.none,
+                              ),
+                              textInputAction: TextInputAction.done,
+                              onFieldSubmitted: (term) {
+
+                                //checking if updated price is empty or not
+                                if (term.isNotEmpty) {
+
+                                  //checking if updated price is number or not
+                                  if (double.tryParse(term) is! double) {
+                                    final snackBar = SnackBar(
+                                      content:
+                                          Text('Price cannot be text'),
+                                      duration: Duration(seconds: 3),
+                                    );
+
+                                    //setting previous value of textfeild
+                                    setState(() {
+                                      setPriceController(itmDetl.price);
+                                    });
+
+                                    // Find the Scaffold in the widget tree and use it to show a SnackBar.
+                                    _scaffoldKey.currentState
+                                        .showSnackBar(snackBar);
+
+                                    //_scaffoldKey.currentState.removeCurrentSnackBar();
+                                  } else{
+                                    itmDetl.price = term;
                                   }
-                        ),
+                                } else {
+                                  itmDetl.price = term;
+                                }
+                              },
+                            ),
+                            showEditIcon: true, onTap: () {
+                          print('Selected ${itmDetl.price}');
+
+                          print("Display list ${shoppingList[2].price}");
+                        }),
                       ]),
                 )
                 .toList(),
@@ -310,6 +398,16 @@ class ItemsListState extends State<ItemsList> {
         ],
       ),
     );
+  }
+
+  setItemNameController(String itemName) {
+    var setItemNameController = TextEditingController(text: itemName);
+    return setItemNameController;
+  }
+
+  setPriceController(String price) {
+    var setPriceController = TextEditingController(text: price);
+    return setPriceController;
   }
 
   onSelectedRow(bool select, ShoppingListModel shoppingListModel) {

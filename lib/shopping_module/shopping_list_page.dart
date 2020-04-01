@@ -3,8 +3,6 @@ import 'package:expense_tracker_app/shopping_module/create_new_shopping_list_pag
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-
-
 //
 class ShoppingListPage extends StatefulWidget {
   @override
@@ -24,17 +22,13 @@ class ShoppingListPageState extends State<ShoppingListPage> {
         ),
         body: shoppingListPageBody(),
         floatingActionButton: FloatingActionButton(
-          child: Icon(Icons.add),
-          backgroundColor: setNaturalGreenColor(),
-          onPressed: () {
-            Navigator.push(context, MaterialPageRoute(builder: (context) {
-            return CreateNewShoppingListPage();
-          }));
-          
-        }
-        )
-        
-        );
+            child: Icon(Icons.add),
+            backgroundColor: setNaturalGreenColor(),
+            onPressed: () {
+              Navigator.push(context, MaterialPageRoute(builder: (context) {
+                return CreateNewShoppingListPage();
+              }));
+            }));
   }
 
   shoppingListPageBody() {
@@ -42,25 +36,84 @@ class ShoppingListPageState extends State<ShoppingListPage> {
       mainAxisAlignment: MainAxisAlignment.center,
       crossAxisAlignment: CrossAxisAlignment.center,
       children: <Widget>[
-        Center(child: CircleAvatar(
-          backgroundColor: Colors.grey[300],
-          radius: 50.0,
-          child: Icon(Icons.shopping_cart,
-          size:40.0,
-          color:Colors.grey))),
-        SizedBox(height:10.0 ,),
-        Text("Plan before you shop",style: TextStyle(
-          fontWeight:FontWeight.bold,
-          fontSize: 25.0
-        ),),
-        SizedBox(height:5.0 ,),
+        shoppingListsCards(),
+        Center(
+            child: CircleAvatar(
+                backgroundColor: Colors.grey[300],
+                radius: 50.0,
+                child:
+                    Icon(Icons.shopping_cart, size: 40.0, color: Colors.grey))),
+        SizedBox(
+          height: 10.0,
+        ),
+        Text(
+          "Plan before you shop",
+          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 25.0),
+        ),
+        SizedBox(
+          height: 5.0,
+        ),
         Container(
-          width: 300.0,
-          child: Text("Manage all your shopping lists here. Tap the plus button to add the first one.",
-          style: TextStyle(
-            fontSize: 17.0,color: Colors.grey[700]
-          ),))
+            width: 300.0,
+            child: Text(
+              "Manage all your shopping lists here. Tap the plus button to add the first one.",
+              style: TextStyle(fontSize: 17.0, color: Colors.grey[700]),
+            ))
       ],
     );
+  }
+
+  shoppingListsCards() {
+    return Card(
+        child: Padding(
+      padding: EdgeInsets.only(left: 10.0, right: 10.0),
+      child: Container(
+          height: 100,
+          width: MediaQuery.of(context).size.width,
+          child: Column(
+            children: <Widget>[
+              SizedBox(
+                height: 10,
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: <Widget>[
+                  Text("Shopping list name",
+                      style: TextStyle(
+                          color: Colors.black,
+                          fontSize: 20.0,
+                          fontWeight: FontWeight.bold)),
+                  Text("Rs. dhumval",
+                      style: TextStyle(
+                          color: Colors.black,
+                          fontSize: 20.0,
+                          fontWeight: FontWeight.bold))
+                ],
+              ),
+              SizedBox(
+                height: 5,
+              ),
+              Row(children: <Widget>[Text("0/1 items")]),
+              SizedBox(
+                height: 10,
+              ),
+              Divider(
+                thickness: 1.5,
+              ),
+              Row(
+                children: <Widget>[
+                  InkWell(
+                    onLongPress: () {},
+                    child: Text("SHARE LIST",
+                        style: TextStyle(
+                            fontSize: 16.0,
+                            color: Colors.blue,
+                            fontWeight: FontWeight.bold)),
+                  ),
+                ],
+              )
+            ],
+          )),
+    ));
   }
 }

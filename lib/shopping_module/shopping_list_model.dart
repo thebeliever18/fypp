@@ -1,4 +1,3 @@
-
 class ShoppingListModel{
   String itemName;
   String price;

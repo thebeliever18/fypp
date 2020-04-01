@@ -114,6 +114,7 @@ class CreateNewShoppingListPageState extends State<CreateNewShoppingListPage> {
                   Navigator.push(context, MaterialPageRoute(builder: (context) {
                     return ItemsList();
                   }));
+                  
                 }else{
                   setState(() {
                       autoValidate=true;
