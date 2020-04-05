@@ -41,6 +41,10 @@ dependencies:
 
   #Flutter plugin for generating random colours
   random_color: ^1.0.3
+
+  #Flutter plugin for provider package
+  provider: ^4.0.4
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

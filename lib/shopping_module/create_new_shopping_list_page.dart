@@ -14,6 +14,7 @@ class CreateNewShoppingListPageState extends State<CreateNewShoppingListPage> {
   FocusNode focusNodeNameOfShoppingList = new FocusNode();
   bool autoValidate=false;
   final _formKey = GlobalKey<FormState>();
+  var shoppingListName = TextEditingController();
    
   @override
   void initState() {
@@ -79,6 +80,7 @@ class CreateNewShoppingListPageState extends State<CreateNewShoppingListPage> {
             child: Container(
               width: 290,
               child: TextFormField(
+                controller: shoppingListName,
                 autovalidate: autoValidate,
                 validator: (value) {
                   if (value.isEmpty) {
@@ -112,9 +114,8 @@ class CreateNewShoppingListPageState extends State<CreateNewShoppingListPage> {
                 if (_formKey.currentState.validate()) {
                   //navigating to the page which contains different item to be purchased
                   Navigator.push(context, MaterialPageRoute(builder: (context) {
-                    return ItemsList();
+                    return ItemsList(shoppingListName.text);
                   }));
-                  
                 }else{
                   setState(() {
                       autoValidate=true;

@@ -22,11 +22,15 @@ void addToShoppingList(ShoppingListModel data) {
 
 //Page for different shopping items
 class ItemsList extends StatefulWidget {
+  String shoppingListName;
+  ItemsList(this.shoppingListName);
   @override
-  ItemsListState createState() => ItemsListState();
+  ItemsListState createState() => ItemsListState(this.shoppingListName);
 }
 
 class ItemsListState extends State<ItemsList> {
+  String shoppingListName;
+  ItemsListState(this.shoppingListName);
   final _formKeyOne = GlobalKey<FormState>();
   final _formKeyTwo = GlobalKey<FormState>();
   bool autovalidate = false;
@@ -91,15 +95,12 @@ class ItemsListState extends State<ItemsList> {
     return Scaffold(
         key: _scaffoldKey,
         appBar: AppBar(
-            title: Text("title"),
+            title: Text("$shoppingListName"),
             backgroundColor: setNaturalGreenColor(),
             actions: [
-              IconButton(icon: Icon(Icons.save), 
-              onPressed: (){
-                
-              }),
+              IconButton(icon: Icon(Icons.save), onPressed: () {}),
               popupMenuButton()
-              ]),
+            ]),
         body: itemsListBody(),
         floatingActionButton: showFloatingActionButton
             ? FloatingActionButton(
@@ -356,15 +357,12 @@ class ItemsListState extends State<ItemsList> {
                               ),
                               textInputAction: TextInputAction.done,
                               onFieldSubmitted: (term) {
-
                                 //checking if updated price is empty or not
                                 if (term.isNotEmpty) {
-
                                   //checking if updated price is number or not
                                   if (double.tryParse(term) is! double) {
                                     final snackBar = SnackBar(
-                                      content:
-                                          Text('Price cannot be text'),
+                                      content: Text('Price cannot be text'),
                                       duration: Duration(seconds: 3),
                                     );
 
@@ -378,7 +376,7 @@ class ItemsListState extends State<ItemsList> {
                                         .showSnackBar(snackBar);
 
                                     //_scaffoldKey.currentState.removeCurrentSnackBar();
-                                  } else{
+                                  } else {
                                     itmDetl.price = term;
                                   }
                                 } else {
