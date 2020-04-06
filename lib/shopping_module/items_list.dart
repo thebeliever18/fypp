@@ -1,7 +1,10 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:expense_tracker_app/decorations.dart';
 import 'package:expense_tracker_app/shopping_module/shopping_list_model.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+
+import '../login_registration_page.dart';
 
 //Creating list of type ShoppingListModel
 List<ShoppingListModel> shoppingList = [];
@@ -98,7 +101,11 @@ class ItemsListState extends State<ItemsList> {
             title: Text("$shoppingListName"),
             backgroundColor: setNaturalGreenColor(),
             actions: [
-              IconButton(icon: Icon(Icons.save), onPressed: () {}),
+              IconButton(
+                  icon: Icon(Icons.save),
+                  onPressed: () {
+                    addDataToFireBase();
+                  }),
               popupMenuButton()
             ]),
         body: itemsListBody(),
@@ -416,5 +423,53 @@ class ItemsListState extends State<ItemsList> {
         selectedShoppingItems.remove(shoppingListModel);
       }
     });
+  }
+
+  //adding data to firebase
+  addDataToFireBase() async {
+    List unSelectedItems = [];
+    List selectedItems = [];
+
+  for (var j = 0; j < selectedShoppingItems.length; j++) {
+
+      selectedItems.add([
+          selectedShoppingItems[j].itemName,
+          selectedShoppingItems[j].price
+        ]);
+
+    for (var i = 0; i < shoppingList.length; i++) {
+        
+        if (shoppingList[i].itemName != selectedShoppingItems[j].itemName &&
+            shoppingList[i].price != selectedShoppingItems[j].price) {
+          unSelectedItems
+              .add([shoppingList[i].itemName, shoppingList[i].price]);
+        } else {
+          continue;
+        }
+      }
+    }
+    
+    print(unSelectedItems);
+    print(selectedItems);
+
+    // String uid;
+    // LoginRegistrationPageState obj = new LoginRegistrationPageState();
+    // uid = await obj.getCurrentUserId();
+
+    // Firestore.instance
+    //     .collection('ShoppingItems')
+    //     .document(uid)
+    //     .collection('shoppingItemsData')
+    //     .document()
+    //     .setData({
+    //         'Shopping List Title':shoppingListName,
+    //         for (var i = 0; i < count; i++)
+    //           'Unselected Items': [['','']],
+    //         for (var i = 0; i < count; i++)
+    //           'Selected Items':[['','']]
+    // });
+
+    // print(shoppingList.length);
+    // print(selectedShoppingItems.length);
   }
 }

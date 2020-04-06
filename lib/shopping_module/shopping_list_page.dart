@@ -12,7 +12,6 @@ class ShoppingListPage extends StatefulWidget {
 class ShoppingListPageState extends State<ShoppingListPage> {
   @override
   Widget build(BuildContext context) {
-    
     return Scaffold(
         appBar: AppBar(
           backgroundColor: setNaturalGreenColor(),
