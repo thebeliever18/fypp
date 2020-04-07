@@ -430,48 +430,54 @@ class ItemsListState extends State<ItemsList> {
   addDataToFireBase() async {
     List unSelectedItems = [];
     List selectedItems = [];
+    List<ShoppingListModel> shoppingListSecondList = [];
 
-  for (var j = 0; j < selectedShoppingItems.length; j++) {
-
-      selectedItems.add([
-          selectedShoppingItems[j].itemName,
-          selectedShoppingItems[j].price
-        ]);
-  }
-   print(selectedItems);
-
-    for (var i = 0; i < shoppingList.length; i++) {
-        for (var j = 0; j < selectedShoppingItems.length; j++) {
-        if (selectedShoppingItems[j].itemName== shoppingList[i].itemName &&
-            selectedShoppingItems[j].price==shoppingList[i].price ) {
-              shoppingList.removeAt(i);
-              
-              i=i-1;
-              break;
-        } 
+    //adding all the elements of shoppingList in new list i.e. shoppingListSecondList
+    if (shoppingList != null) {
+      for (var i = 0; i < shoppingList.length; i++) {
+        shoppingListSecondList.add(shoppingList[i]);
       }
     }
 
-    for (var i = 0; i < shoppingList.length; i++) {
-
-      unSelectedItems.add([
-          shoppingList[i].itemName,
-          shoppingList[i].price
+    print("shoopinglists second  $shoppingListSecondList");
+    //if none of the items are selected then selectedShoppingItems will be null
+    if (selectedShoppingItems != null) {
+      for (var j = 0; j < selectedShoppingItems.length; j++) {
+        selectedItems.add([
+          selectedShoppingItems[j].itemName,
+          selectedShoppingItems[j].price
         ]);
-  }
-    
-  // if(selectedShoppingItems.contains(shoppingList)){
-  //   print(selectedShoppingItems);
-  // }else{
-  //   print(selectedShoppingItems);
-  // }
-    // else {
-    //       unSelectedItems
-    //           .add([shoppingList[i].itemName, shoppingList[i].price]);
-    //           break;
-    //     }
-    print(unSelectedItems);
-   
+      }
+      print("selected items $selectedItems");
+    }
+
+    //if none of the items are selected then selectedShoppingItems will be null
+    if (selectedShoppingItems != null) {
+      for (var i = 0; i < shoppingListSecondList.length; i++) {
+        for (var j = 0; j < selectedShoppingItems.length; j++) {
+          if (selectedShoppingItems[j].itemName ==
+                  shoppingListSecondList[i].itemName &&
+              selectedShoppingItems[j].price ==
+                  shoppingListSecondList[i].price) {
+            shoppingListSecondList.removeAt(i);
+            i = i - 1;
+            break;
+          }
+        }
+      }
+    }
+
+    //checking if all items are selected or not. If all items are selected shoppingList will be null
+    if (shoppingList != null) {
+      for (var i = 0; i < shoppingListSecondList.length; i++) {
+        unSelectedItems.add([
+          shoppingListSecondList[i].itemName,
+          shoppingListSecondList[i].price
+        ]);
+      }
+    }
+
+    print("unselected items $unSelectedItems");
 
     // String uid;
     // LoginRegistrationPageState obj = new LoginRegistrationPageState();
@@ -493,12 +499,8 @@ class ItemsListState extends State<ItemsList> {
     // print(shoppingList.length);
     // print(selectedShoppingItems.length);
 
-
-    Navigator.push(context,
-                        MaterialPageRoute(builder: (context) {
-                      return ShoppingListPage(true
-                      );
-                    }));
-
+    Navigator.push(context, MaterialPageRoute(builder: (context) {
+      return ShoppingListPage(true);
+    }));
   }
 }
