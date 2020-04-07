@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:expense_tracker_app/decorations.dart';
 import 'package:expense_tracker_app/shopping_module/shopping_list_model.dart';
+import 'package:expense_tracker_app/shopping_module/shopping_list_page.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -436,21 +437,41 @@ class ItemsListState extends State<ItemsList> {
           selectedShoppingItems[j].itemName,
           selectedShoppingItems[j].price
         ]);
+  }
+   print(selectedItems);
 
     for (var i = 0; i < shoppingList.length; i++) {
-        
-        if (shoppingList[i].itemName != selectedShoppingItems[j].itemName &&
-            shoppingList[i].price != selectedShoppingItems[j].price) {
-          unSelectedItems
-              .add([shoppingList[i].itemName, shoppingList[i].price]);
-        } else {
-          continue;
-        }
+        for (var j = 0; j < selectedShoppingItems.length; j++) {
+        if (selectedShoppingItems[j].itemName== shoppingList[i].itemName &&
+            selectedShoppingItems[j].price==shoppingList[i].price ) {
+              shoppingList.removeAt(i);
+              
+              i=i-1;
+              break;
+        } 
       }
     }
+
+    for (var i = 0; i < shoppingList.length; i++) {
+
+      unSelectedItems.add([
+          shoppingList[i].itemName,
+          shoppingList[i].price
+        ]);
+  }
     
+  // if(selectedShoppingItems.contains(shoppingList)){
+  //   print(selectedShoppingItems);
+  // }else{
+  //   print(selectedShoppingItems);
+  // }
+    // else {
+    //       unSelectedItems
+    //           .add([shoppingList[i].itemName, shoppingList[i].price]);
+    //           break;
+    //     }
     print(unSelectedItems);
-    print(selectedItems);
+   
 
     // String uid;
     // LoginRegistrationPageState obj = new LoginRegistrationPageState();
@@ -471,5 +492,13 @@ class ItemsListState extends State<ItemsList> {
 
     // print(shoppingList.length);
     // print(selectedShoppingItems.length);
+
+
+    Navigator.push(context,
+                        MaterialPageRoute(builder: (context) {
+                      return ShoppingListPage(true
+                      );
+                    }));
+
   }
 }

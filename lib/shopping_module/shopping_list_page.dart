@@ -5,11 +5,15 @@ import 'package:flutter/material.dart';
 
 
 class ShoppingListPage extends StatefulWidget {
+  bool showCard;
+  ShoppingListPage([this.showCard]);
   @override
-  ShoppingListPageState createState() => ShoppingListPageState();
+  ShoppingListPageState createState() => ShoppingListPageState(this.showCard);
 }
 
 class ShoppingListPageState extends State<ShoppingListPage> {
+  bool showCard;
+  ShoppingListPageState(this.showCard);
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -20,7 +24,7 @@ class ShoppingListPageState extends State<ShoppingListPage> {
             style: TextStyle(color: Colors.white),
           ),
         ),
-        body: shoppingListPageBody(),
+        body: showCard ? shoppingListsCards(context):shoppingListPageBody(context),
         floatingActionButton: FloatingActionButton(
             child: Icon(Icons.add),
             backgroundColor: setNaturalGreenColor(),
@@ -31,7 +35,7 @@ class ShoppingListPageState extends State<ShoppingListPage> {
             }));
   }
 
-  shoppingListPageBody() {
+  shoppingListPageBody(context) {
       return Column(
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,
@@ -64,15 +68,15 @@ class ShoppingListPageState extends State<ShoppingListPage> {
   }
 }
 
-shoppingListsCards() {
-     Column(
+shoppingListsCards(context) {
+     return Column(
       children: <Widget>[
         Card(
             child: Padding(
           padding: EdgeInsets.only(left: 10.0, right: 10.0),
           child: Container(
               height: 100,
-              width: 200,
+              width: MediaQuery.of(context).size.width,
               child: Column(
                 children: <Widget>[
                   SizedBox(
