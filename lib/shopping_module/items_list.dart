@@ -101,11 +101,16 @@ class ItemsListState extends State<ItemsList> {
         appBar: AppBar(
             title: Text("$shoppingListName"),
             backgroundColor: setNaturalGreenColor(),
+            leading: IconButton(
+                icon: Icon(Icons.arrow_back),
+                onPressed: () {
+                  saveDialogBox(true);
+                }),
             actions: [
               IconButton(
                   icon: Icon(Icons.save),
                   onPressed: () {
-                    addDataToFireBase();
+                    saveDialogBox(false);
                   }),
               popupMenuButton()
             ]),
@@ -426,6 +431,39 @@ class ItemsListState extends State<ItemsList> {
     });
   }
 
+  //dialog box called after pressing back arrow button and save button in the app bar
+  saveDialogBox(bool boolVal) async {
+    await showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            content: Text( boolVal ?
+                "Please save all the data of $shoppingListName else all data might get lost": 
+                "Are you sure you want to save the data of $shoppingListName ?"),
+            actions: <Widget>[
+              FlatButton(
+                child: Text(
+                  "Cancel",
+                  style: TextStyle(color: Colors.black),
+                ),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+              ),
+              FlatButton(
+                child: Text(
+                  "Save",
+                  style: TextStyle(color: Colors.green),
+                ),
+                onPressed: () async {
+                  addDataToFireBase();
+                },
+              ),
+            ],
+          );
+        });
+  }
+
   //adding data to firebase
   addDataToFireBase() async {
     List unSelectedItems = [];
@@ -433,36 +471,31 @@ class ItemsListState extends State<ItemsList> {
     List<ShoppingListModel> shoppingListSecondList = [];
 
     //adding all the elements of shoppingList in new list i.e. shoppingListSecondList
-    if (shoppingList != null) {
-      for (var i = 0; i < shoppingList.length; i++) {
-        shoppingListSecondList.add(shoppingList[i]);
-      }
+
+    for (var i = 0; i < shoppingList.length; i++) {
+      shoppingListSecondList.add(shoppingList[i]);
     }
 
     print("shoopinglists second  $shoppingListSecondList");
     //if none of the items are selected then selectedShoppingItems will be null
-    if (selectedShoppingItems != null) {
-      for (var j = 0; j < selectedShoppingItems.length; j++) {
-        selectedItems.add([
-          selectedShoppingItems[j].itemName,
-          selectedShoppingItems[j].price
-        ]);
-      }
-      print("selected items $selectedItems");
-    }
 
-    //if none of the items are selected then selectedShoppingItems will be null
-    if (selectedShoppingItems != null) {
-      for (var i = 0; i < shoppingListSecondList.length; i++) {
-        for (var j = 0; j < selectedShoppingItems.length; j++) {
-          if (selectedShoppingItems[j].itemName ==
-                  shoppingListSecondList[i].itemName &&
-              selectedShoppingItems[j].price ==
-                  shoppingListSecondList[i].price) {
-            shoppingListSecondList.removeAt(i);
-            i = i - 1;
-            break;
-          }
+    for (var j = 0; j < selectedShoppingItems.length; j++) {
+      selectedItems.add(
+        selectedShoppingItems[j].itemName,
+      );
+
+      selectedItems.add(selectedShoppingItems[j].price);
+    }
+    print("selected items $selectedItems");
+
+    for (var i = 0; i < shoppingListSecondList.length; i++) {
+      for (var j = 0; j < selectedShoppingItems.length; j++) {
+        if (selectedShoppingItems[j].itemName ==
+                shoppingListSecondList[i].itemName &&
+            selectedShoppingItems[j].price == shoppingListSecondList[i].price) {
+          shoppingListSecondList.removeAt(i);
+          i = i - 1;
+          break;
         }
       }
     }
@@ -470,37 +503,36 @@ class ItemsListState extends State<ItemsList> {
     //checking if all items are selected or not. If all items are selected shoppingList will be null
     if (shoppingList != null) {
       for (var i = 0; i < shoppingListSecondList.length; i++) {
-        unSelectedItems.add([
+        unSelectedItems.add(
           shoppingListSecondList[i].itemName,
-          shoppingListSecondList[i].price
-        ]);
+        );
+
+        unSelectedItems.add(shoppingListSecondList[i].price);
       }
     }
 
     print("unselected items $unSelectedItems");
 
-    // String uid;
-    // LoginRegistrationPageState obj = new LoginRegistrationPageState();
-    // uid = await obj.getCurrentUserId();
+    String uid;
+    LoginRegistrationPageState obj = new LoginRegistrationPageState();
+    uid = await obj.getCurrentUserId();
 
-    // Firestore.instance
-    //     .collection('ShoppingItems')
-    //     .document(uid)
-    //     .collection('shoppingItemsData')
-    //     .document()
-    //     .setData({
-    //         'Shopping List Title':shoppingListName,
-    //         for (var i = 0; i < count; i++)
-    //           'Unselected Items': [['','']],
-    //         for (var i = 0; i < count; i++)
-    //           'Selected Items':[['','']]
-    // });
+    Firestore.instance
+        .collection('ShoppingItems')
+        .document(uid)
+        .collection('shoppingItemsData')
+        .document()
+        .setData({
+      'Shopping List Title': shoppingListName,
+      'Unselected Items': unSelectedItems,
+      'Selected Items': selectedItems
+    });
 
     // print(shoppingList.length);
     // print(selectedShoppingItems.length);
 
     Navigator.push(context, MaterialPageRoute(builder: (context) {
-      return ShoppingListPage(true);
+      return ShoppingListPage();
     }));
   }
 }

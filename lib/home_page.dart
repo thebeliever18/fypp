@@ -468,7 +468,7 @@ drawerItems(context) {
         onTap: () {
           //Navigating to shopping list page
           Navigator.push(context, MaterialPageRoute(builder: (context) {
-            return ShoppingListPage(false);
+            return ShoppingListPage();
           }));
         },
       ),
