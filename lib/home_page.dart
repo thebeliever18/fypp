@@ -1,21 +1,15 @@
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
-
 import 'package:expense_tracker_app/add_envelope_page.dart';
 import 'package:expense_tracker_app/categories.dart';
-
 import 'package:expense_tracker_app/envelope_reorderable_listview.dart';
 import 'package:expense_tracker_app/login_registration_page.dart';
 import 'package:expense_tracker_app/envelope_model.dart';
 import 'package:expense_tracker_app/shopping_module/shopping_list_page.dart';
-
-
 import 'package:expense_tracker_app/transaction_module/transaction_list_page.dart';
 import 'package:expense_tracker_app/transaction_module/transaction_page.dart';
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 //Creating list of type EnvelopeModel

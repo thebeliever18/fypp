@@ -12,10 +12,10 @@ class CreateNewShoppingListPage extends StatefulWidget {
 
 class CreateNewShoppingListPageState extends State<CreateNewShoppingListPage> {
   FocusNode focusNodeNameOfShoppingList = new FocusNode();
-  bool autoValidate=false;
+  bool autoValidate = false;
   final _formKey = GlobalKey<FormState>();
   var shoppingListName = TextEditingController();
-   
+
   @override
   void initState() {
     // TODO: implement initState
@@ -46,7 +46,7 @@ class CreateNewShoppingListPageState extends State<CreateNewShoppingListPage> {
             }),
       ),
       body: createNewShoppingListPageBody(),
-      );
+    );
   }
 
   createNewShoppingListPageBody() {
@@ -116,9 +116,9 @@ class CreateNewShoppingListPageState extends State<CreateNewShoppingListPage> {
                   Navigator.push(context, MaterialPageRoute(builder: (context) {
                     return ItemsList(shoppingListName.text);
                   }));
-                }else{
+                } else {
                   setState(() {
-                      autoValidate=true;
+                    autoValidate = true;
                   });
                 }
               },

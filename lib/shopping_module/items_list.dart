@@ -4,7 +4,6 @@ import 'package:expense_tracker_app/shopping_module/shopping_list_model.dart';
 import 'package:expense_tracker_app/shopping_module/shopping_list_page.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-
 import '../login_registration_page.dart';
 
 //Creating list of type ShoppingListModel
@@ -14,7 +13,7 @@ int count = 0;
 int i;
 int an;
 
-final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
+GlobalKey<ScaffoldState> _scaffKey = new GlobalKey<ScaffoldState>();
 //Method for appending data to the ShoppingListModel
 void addToShoppingList(ShoppingListModel data) {
   shoppingList.add(data);
@@ -95,9 +94,15 @@ class ItemsListState extends State<ItemsList> {
   }
 
   @override
+  void dispose() {
+    // TODO: implement dispose
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
-        key: _scaffoldKey,
+        key: _scaffKey,
         appBar: AppBar(
             title: Text("$shoppingListName"),
             backgroundColor: setNaturalGreenColor(),
@@ -327,7 +332,7 @@ class ItemsListState extends State<ItemsList> {
                                 });
 
                                 // Find the Scaffold in the widget tree and use it to show a SnackBar.
-                                _scaffoldKey.currentState
+                                _scaffKey.currentState
                                     .showSnackBar(snackBar);
                               }
 
@@ -344,7 +349,7 @@ class ItemsListState extends State<ItemsList> {
                                 });
 
                                 // Find the Scaffold in the widget tree and use it to show a SnackBar.
-                                _scaffoldKey.currentState
+                                _scaffKey.currentState
                                     .showSnackBar(snackBar);
 
                                 //_scaffoldKey.currentState.removeCurrentSnackBar();
@@ -385,7 +390,7 @@ class ItemsListState extends State<ItemsList> {
                                     });
 
                                     // Find the Scaffold in the widget tree and use it to show a SnackBar.
-                                    _scaffoldKey.currentState
+                                    _scaffKey.currentState
                                         .showSnackBar(snackBar);
 
                                     //_scaffoldKey.currentState.removeCurrentSnackBar();
@@ -437,9 +442,9 @@ class ItemsListState extends State<ItemsList> {
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
-            content: Text( boolVal ?
-                "Please save all the data of $shoppingListName else all data might get lost": 
-                "Are you sure you want to save the data of $shoppingListName ?"),
+            content: Text(boolVal
+                ? "Please save all the data of $shoppingListName else all data might get lost"
+                : "Are you sure you want to save the data of $shoppingListName ?"),
             actions: <Widget>[
               FlatButton(
                 child: Text(
@@ -534,5 +539,8 @@ class ItemsListState extends State<ItemsList> {
     Navigator.push(context, MaterialPageRoute(builder: (context) {
       return ShoppingListPage();
     }));
+
+    shoppingList.clear();
+    selectedShoppingItems.clear();
   }
 }
