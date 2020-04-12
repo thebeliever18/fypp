@@ -135,7 +135,9 @@ class ShoppingListPageState extends State<ShoppingListPage> {
                     onTap: () {
                       //navigating to the page which contains different item to be purchased
                   Navigator.push(context, MaterialPageRoute(builder: (context) {
-                    return ItemsList(listOfShoppingListData[i].data["Shopping List Title"]);
+                    return ItemsList(listOfShoppingListData[i].data["Shopping List Title"],true,
+                    listOfShoppingListData[i].data["Selected Items"],listOfShoppingListData[i].data["Unselected Items"],true,listOfShoppingListData[i].documentID
+                    );
                   }));
                     },
                     child: Padding(

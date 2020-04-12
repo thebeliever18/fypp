@@ -12,7 +12,7 @@ List<ShoppingListModel> selectedShoppingItems = [];
 int count = 0;
 int i;
 int an;
-
+String uid;
 GlobalKey<ScaffoldState> _scaffKey = new GlobalKey<ScaffoldState>();
 //Method for appending data to the ShoppingListModel
 void addToShoppingList(ShoppingListModel data) {
@@ -26,14 +26,55 @@ void addToShoppingList(ShoppingListModel data) {
 //Page for different shopping items
 class ItemsList extends StatefulWidget {
   String shoppingListName;
-  ItemsList(this.shoppingListName);
+
+  bool callMethodForExtractingFirebaseData;
+
+  var listOfShoppingListDataSelectedItems;
+
+  var listOfShoppingListDataUnselectedItems;
+
+  bool updateToFirebase;
+
+  var documentId;
+
+  ItemsList(
+      [this.shoppingListName,
+      this.callMethodForExtractingFirebaseData,
+      this.listOfShoppingListDataSelectedItems,
+      this.listOfShoppingListDataUnselectedItems,
+      this.updateToFirebase,
+      this.documentId]);
   @override
-  ItemsListState createState() => ItemsListState(this.shoppingListName);
+  ItemsListState createState() => ItemsListState(
+      this.shoppingListName,
+      this.callMethodForExtractingFirebaseData,
+      this.listOfShoppingListDataSelectedItems,
+      this.listOfShoppingListDataUnselectedItems,
+      this.updateToFirebase,
+      this.documentId);
 }
 
 class ItemsListState extends State<ItemsList> {
   String shoppingListName;
-  ItemsListState(this.shoppingListName);
+  bool callMethodForExtractingFirebaseData;
+
+  //variable for storing data of Shopping list
+  var listOfShoppingListDataSelectedItems;
+
+  var listOfShoppingListDataUnselectedItems;
+
+  bool updateToFirebase;
+
+  var documentId;
+
+  ItemsListState(
+      this.shoppingListName,
+      this.callMethodForExtractingFirebaseData,
+      this.listOfShoppingListDataSelectedItems,
+      this.listOfShoppingListDataUnselectedItems,
+      this.updateToFirebase,
+      this.documentId);
+
   final _formKeyOne = GlobalKey<FormState>();
   final _formKeyTwo = GlobalKey<FormState>();
   bool autovalidate = false;
@@ -77,9 +118,10 @@ class ItemsListState extends State<ItemsList> {
       ],
       onSelected: (returnValue) {
         if (returnValue == "Rename shopping list") {
-          print("Rename shopping list");
+          renameShoppingListName();
         } else if (returnValue == "Delete list") {
           print("Delete list");
+          deleteShoppingListDataFromFirebase();
         }
       },
     );
@@ -90,7 +132,9 @@ class ItemsListState extends State<ItemsList> {
     // TODO: implement initState
     super.initState();
 
-    //shoppingList = ShoppingListModel.getShoppingItemData();
+    if (callMethodForExtractingFirebaseData == true) {
+      methodForExtractingFirebaseData();
+    }
   }
 
   @override
@@ -101,38 +145,100 @@ class ItemsListState extends State<ItemsList> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        key: _scaffKey,
-        appBar: AppBar(
-            title: Text("$shoppingListName"),
-            backgroundColor: setNaturalGreenColor(),
-            leading: IconButton(
-                icon: Icon(Icons.arrow_back),
-                onPressed: () {
-                  saveDialogBox(true);
-                }),
-            actions: [
-              IconButton(
-                  icon: Icon(Icons.save),
+    return WillPopScope(
+      onWillPop: () {
+        return saveDialogBox(true);
+      },
+      child: Scaffold(
+          key: _scaffKey,
+          appBar: AppBar(
+              title: Text("$shoppingListName"),
+              backgroundColor: setNaturalGreenColor(),
+              leading: IconButton(
+                  icon: Icon(Icons.arrow_back),
                   onPressed: () {
-                    saveDialogBox(false);
+                    saveDialogBox(true);
                   }),
-              popupMenuButton()
-            ]),
-        body: itemsListBody(),
-        floatingActionButton: showFloatingActionButton
-            ? FloatingActionButton(
-                child: Icon(Icons.add),
-                backgroundColor: setNaturalGreenColor(),
+              actions: [
+                IconButton(
+                    icon: Icon(Icons.save),
+                    onPressed: () {
+                      saveDialogBox(false);
+                    }),
+                popupMenuButton()
+              ]),
+          body: itemsListBody(),
+          floatingActionButton: showFloatingActionButton
+              ? FloatingActionButton(
+                  child: Icon(Icons.add),
+                  backgroundColor: setNaturalGreenColor(),
+                  onPressed: () {
+                    print("pressedssed");
+                    setState(() {
+                      //after pressing floating action button textfeild for inputting item name and price appears
+                      showFloatingActionButton = false;
+                      autovalidate = false;
+                    });
+                  })
+              : null),
+    );
+  }
+
+  deleteShoppingListDataFromFirebase() {
+    return showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            content:
+                Text("Are you sure you want to delete $shoppingListName ?"),
+            actions: <Widget>[
+              FlatButton(
+                child: Text(
+                  "Cancel",
+                  style: TextStyle(color: Colors.black),
+                ),
                 onPressed: () {
-                  print("pressedssed");
-                  setState(() {
-                    //after pressing floating action button textfeild for inputting item name and price appears
-                    showFloatingActionButton = false;
-                    autovalidate = false;
+                  Navigator.of(context).pop();
+                },
+              ),
+              FlatButton(
+                child: Text(
+                  "Delete",
+                  style: TextStyle(color: Colors.red),
+                ),
+                onPressed: () async {
+                  // TODO: Delete the item from DB etc..
+
+                  LoginRegistrationPageState obj =
+                      new LoginRegistrationPageState();
+                  uid = await obj.getCurrentUserId();
+                  Firestore.instance
+                      .collection('ShoppingItems')
+                      .document(uid)
+                      .collection('shoppingItemsData')
+                      .document(documentId)
+                      .delete();
+
+                  final snackBar = SnackBar(
+                    content: Text('This shopping list is deleted'),
+                    duration: Duration(seconds: 1),
+                  );
+
+                  _scaffKey.currentState.showSnackBar(snackBar);
+
+                  //after deleting navigating to home page
+                  Future.delayed(const Duration(seconds: 2), () {
+                    Navigator.push(context,
+                        MaterialPageRoute(builder: (context) {
+                      return ShoppingListPage();
+                    }));
+                    _scaffKey.currentState.removeCurrentSnackBar();
                   });
-                })
-            : null);
+                },
+              ),
+            ],
+          );
+        });
   }
 
   itemsListBody() {
@@ -332,8 +438,7 @@ class ItemsListState extends State<ItemsList> {
                                 });
 
                                 // Find the Scaffold in the widget tree and use it to show a SnackBar.
-                                _scaffKey.currentState
-                                    .showSnackBar(snackBar);
+                                _scaffKey.currentState.showSnackBar(snackBar);
                               }
 
                               //checking if updated text is string or not
@@ -349,8 +454,7 @@ class ItemsListState extends State<ItemsList> {
                                 });
 
                                 // Find the Scaffold in the widget tree and use it to show a SnackBar.
-                                _scaffKey.currentState
-                                    .showSnackBar(snackBar);
+                                _scaffKey.currentState.showSnackBar(snackBar);
 
                                 //_scaffoldKey.currentState.removeCurrentSnackBar();
                               } else {
@@ -414,6 +518,34 @@ class ItemsListState extends State<ItemsList> {
         ],
       ),
     );
+  }
+
+  renameShoppingListName() {
+    return showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text("Rename $shoppingListName"),
+            content: TextField(
+              //controller: itemToBeEdited,
+              decoration: InputDecoration(
+                //Underline color of text field
+                focusedBorder: UnderlineInputBorder(
+                    borderSide:
+                        BorderSide(color: Color.fromRGBO(80, 213, 162, 1.0))),
+                filled: true,
+                fillColor: Colors.grey[50],
+              ),
+            ),
+            actions: <Widget>[
+              FlatButton(
+                  onPressed: () {
+                    print("pressed ittt");
+                  },
+                  child: Text("Rename", style: TextStyle(color: Colors.green))),
+            ],
+          );
+        });
   }
 
   setItemNameController(String itemName) {
@@ -518,20 +650,35 @@ class ItemsListState extends State<ItemsList> {
 
     print("unselected items $unSelectedItems");
 
-    String uid;
     LoginRegistrationPageState obj = new LoginRegistrationPageState();
     uid = await obj.getCurrentUserId();
 
-    Firestore.instance
-        .collection('ShoppingItems')
-        .document(uid)
-        .collection('shoppingItemsData')
-        .document()
-        .setData({
-      'Shopping List Title': shoppingListName,
-      'Unselected Items': unSelectedItems,
-      'Selected Items': selectedItems
-    });
+    //for updating the previous firebase data
+    if (updateToFirebase == true) {
+      Firestore.instance
+          .collection('ShoppingItems')
+          .document(uid)
+          .collection('shoppingItemsData')
+          .document(documentId)
+          .updateData({
+        'Shopping List Title': shoppingListName,
+        'Unselected Items': unSelectedItems,
+        'Selected Items': selectedItems
+      });
+    }
+    //for saving the data
+    else {
+      Firestore.instance
+          .collection('ShoppingItems')
+          .document(uid)
+          .collection('shoppingItemsData')
+          .document()
+          .setData({
+        'Shopping List Title': shoppingListName,
+        'Unselected Items': unSelectedItems,
+        'Selected Items': selectedItems
+      });
+    }
 
     // print(shoppingList.length);
     // print(selectedShoppingItems.length);
@@ -542,5 +689,37 @@ class ItemsListState extends State<ItemsList> {
 
     shoppingList.clear();
     selectedShoppingItems.clear();
+  }
+
+  //
+  methodForExtractingFirebaseData() {
+    print("shopping list selcted $listOfShoppingListDataSelectedItems");
+    print("shopping list unselcted is $listOfShoppingListDataUnselectedItems");
+
+    for (var i = 0; i < listOfShoppingListDataUnselectedItems.length; i++) {
+      ShoppingListModel itemsDetail = new ShoppingListModel(
+          listOfShoppingListDataUnselectedItems[i],
+          listOfShoppingListDataUnselectedItems[i + 1]);
+
+      //appending item details to shoppingList
+      addToShoppingList(itemsDetail);
+      i = i + 1;
+    }
+
+    for (var i = 0; i < listOfShoppingListDataSelectedItems.length; i++) {
+      ShoppingListModel itemsDetail = new ShoppingListModel(
+          listOfShoppingListDataSelectedItems[i],
+          listOfShoppingListDataSelectedItems[i + 1]);
+
+      //appending item details to shoppingList
+      addToShoppingList(itemsDetail);
+
+      selectedShoppingItems.add(itemsDetail);
+      i = i + 1;
+    }
+
+    setState(() {
+      showFloatingActionButton = true;
+    });
   }
 }

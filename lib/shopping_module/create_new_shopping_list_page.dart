@@ -28,7 +28,7 @@ class CreateNewShoppingListPageState extends State<CreateNewShoppingListPage> {
 
   @override
   void dispose() {
-    // TODO: implement dispose
+    
     super.dispose();
     focusNodeNameOfShoppingList.dispose();
   }
@@ -114,7 +114,7 @@ class CreateNewShoppingListPageState extends State<CreateNewShoppingListPage> {
                 if (_formKey.currentState.validate()) {
                   //navigating to the page which contains different item to be purchased
                   Navigator.push(context, MaterialPageRoute(builder: (context) {
-                    return ItemsList(shoppingListName.text);
+                    return ItemsList(shoppingListName.text,false);
                   }));
                 } else {
                   setState(() {
