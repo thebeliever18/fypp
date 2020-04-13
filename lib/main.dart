@@ -1,8 +1,9 @@
-import 'package:expense_tracker_app/login_registration_page.dart';
 
+
+import 'package:expense_tracker_app/login_registration_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:provider/provider.dart';
+
 
 /*
  * main() method is the first method from where the code gets executed.
@@ -21,16 +22,48 @@ class Main extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: 'Expense Tracker',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
-      home: Scaffold(
-        backgroundColor: Colors.white,
-        resizeToAvoidBottomInset: false,
-        body: LoginRegistrationPage(),
-      ),
-    );
+        debugShowCheckedModeBanner: false,
+        title: 'Expense Tracker',
+        theme: ThemeData(
+          primarySwatch: Colors.blue,
+        ),
+        home: Scaffold(
+            backgroundColor: Colors.white,
+            resizeToAvoidBottomInset: false,
+            body: LoginRegistrationPage(),
+          ),
+      );
   }
+
+  //method for exiting application
+  // exitApp(context){
+    
+  //   return showDialog(
+  //       context: context,
+  //       builder: (BuildContext context) {
+  //         return AlertDialog(
+  //           content: Text("Are you sure you want to exit?"),
+  //           actions: <Widget>[
+  //             FlatButton(
+  //               child: Text(
+  //                 "Cancel",
+  //                 style: TextStyle(color: Colors.black),
+  //               ),
+  //               onPressed: () {
+  //                 Navigator.of(context).pop();
+  //               },
+  //             ),
+  //             FlatButton(
+  //               child: Text(
+  //                 "Yes",
+  //                 style: TextStyle(color: Colors.red),
+  //               ),
+  //               onPressed: () async {
+  //                 exit(0);
+  //               },
+  //             ),
+  //           ],
+  //         );
+  //       });
+  // }
 }

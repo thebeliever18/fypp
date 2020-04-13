@@ -14,6 +14,8 @@ int i;
 int an;
 String uid;
 GlobalKey<ScaffoldState> _scaffKey = new GlobalKey<ScaffoldState>();
+TextEditingController renameText;
+final _formKey = GlobalKey<FormState>();
 //Method for appending data to the ShoppingListModel
 void addToShoppingList(ShoppingListModel data) {
   shoppingList.add(data);
@@ -135,6 +137,8 @@ class ItemsListState extends State<ItemsList> {
     if (callMethodForExtractingFirebaseData == true) {
       methodForExtractingFirebaseData();
     }
+
+    renameText = TextEditingController(text: shoppingListName);
   }
 
   @override
@@ -526,8 +530,9 @@ class ItemsListState extends State<ItemsList> {
         builder: (BuildContext context) {
           return AlertDialog(
             title: Text("Rename $shoppingListName"),
-            content: TextField(
-              //controller: itemToBeEdited,
+            content: TextFormField(
+              key: _formKey,
+              controller: renameText,
               decoration: InputDecoration(
                 //Underline color of text field
                 focusedBorder: UnderlineInputBorder(
@@ -541,6 +546,23 @@ class ItemsListState extends State<ItemsList> {
               FlatButton(
                   onPressed: () {
                     print("pressed ittt");
+                    if (renameText.text.isNotEmpty) {
+                      setState(() {
+                        shoppingListName = renameText.text;
+                      });
+                      Navigator.of(context).pop();
+                    } else if (renameText.text.isEmpty) {
+                      final snackBar = SnackBar(
+                        content: Text('Please enter text to be renamed'),
+                        duration: Duration(seconds: 2),
+                      );
+
+                      _scaffKey.currentState.showSnackBar(snackBar);
+
+                      Future.delayed(const Duration(seconds: 2), () {
+                        _scaffKey.currentState.removeCurrentSnackBar();
+                      });
+                    }
                   },
                   child: Text("Rename", style: TextStyle(color: Colors.green))),
             ],

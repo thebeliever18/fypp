@@ -12,6 +12,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
+import 'settings_page.dart';
+
 //Creating list of type EnvelopeModel
 List<EnvelopeModel> listEnvelope = [];
 
@@ -198,10 +200,15 @@ class HomePageState extends State<HomePage> {
               onPressed: () {}),
           IconButton(
               icon: Icon(
-                Icons.help,
+                Icons.settings,
                 size: 30,
               ),
-              onPressed: () {}),
+              onPressed: () {
+                Navigator.push(context,
+                            MaterialPageRoute(builder: (context) {
+                          return SettingsPage();
+                        }));
+              }),
         ],
 
         //animationDuration for increasing the duration of the animation
