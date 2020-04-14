@@ -4,6 +4,7 @@ import 'package:expense_tracker_app/categories.dart';
 import 'package:expense_tracker_app/envelope_reorderable_listview.dart';
 import 'package:expense_tracker_app/login_registration_page.dart';
 import 'package:expense_tracker_app/envelope_model.dart';
+import 'package:expense_tracker_app/pie_chart.dart';
 import 'package:expense_tracker_app/shopping_module/shopping_list_page.dart';
 import 'package:expense_tracker_app/transaction_module/transaction_list_page.dart';
 import 'package:expense_tracker_app/transaction_module/transaction_page.dart';
@@ -197,7 +198,11 @@ class HomePageState extends State<HomePage> {
                 Icons.pie_chart,
                 size: 30,
               ),
-              onPressed: () {}),
+              onPressed: () {
+                Navigator.push(context, MaterialPageRoute(builder: (context) {
+                  return PieChart();
+                }));
+              }),
           IconButton(
               icon: Icon(
                 Icons.settings,

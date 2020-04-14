@@ -45,6 +45,8 @@ dependencies:
   #Flutter plugin for provider package
   provider: ^4.0.4
 
+  #Flutter plugin for charts
+  charts_flutter: ^0.9.0
 dev_dependencies:
   flutter_test:
     sdk: flutter
