@@ -1,4 +1,6 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:expense_tracker_app/decorations.dart';
+import 'package:expense_tracker_app/login_registration_page.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:charts_flutter/flutter.dart' as charts;
@@ -10,15 +12,16 @@ class PieChart extends StatefulWidget {
 
 class _PieChartState extends State<PieChart> {
   List<charts.Series<PieChartCategory, String>> _seriesData;
-
+  String uid;
+  var listOfTransaction;
   _generateData() {
     var piedata = [
-      new PieChartCategory('Work', 35.8, Color(0xff3366cc)),
-      new PieChartCategory('Eat', 8.3, Color(0xff990099)),
-      new PieChartCategory('Commute', 10.8, Color(0xff109618)),
-      new PieChartCategory('TV', 15.6, Color(0xfffdbe19)),
-      new PieChartCategory('Sleep', 19.2, Color(0xffff9900)),
-      new PieChartCategory('Other', 10.3, Color(0xffdc3912)),
+      PieChartCategory('Work', 35.8, Color(0xff3366cc)),
+      PieChartCategory('Eat', 8.3, Color(0xff990099)),
+      PieChartCategory('Commute', 10.8, Color(0xff109618)),
+      PieChartCategory('TV', 15.6, Color(0xfffdbe19)),
+      PieChartCategory('Sleep', 19.2, Color(0xffff9900)),
+      PieChartCategory('Other', 10.3, Color(0xffdc3912)),
     ];
 
     _seriesData.add(
@@ -42,6 +45,27 @@ class _PieChartState extends State<PieChart> {
     super.initState();
     _seriesData = List<charts.Series<PieChartCategory, String>>();
     _generateData();
+
+    getTransactionsData();
+  }
+
+  getTransactionsData() async {
+    LoginRegistrationPageState obj = new LoginRegistrationPageState();
+    uid = await obj.getCurrentUserId();
+
+    QuerySnapshot querySnapshot = await Firestore.instance
+        .collection('Transactions')
+        .document(uid)
+        .collection('transactionData')
+        .getDocuments();
+
+    //storing extracted list of documents in a variable
+    listOfTransaction = querySnapshot.documents;
+
+    //boolean value displayData is set to true if the extracted list from firestore is not null
+    if (listOfTransaction != null) {
+      displayDataOfTransaction();
+    }
   }
 
   @override
@@ -97,8 +121,7 @@ class _PieChartState extends State<PieChart> {
                           //desiredMaxRows: 2,
                           cellPadding:
                               new EdgeInsets.only(right: 4.0, bottom: 4.0),
-                          entryTextStyle: charts.TextStyleSpec( 
-                              fontSize: 11),
+                          entryTextStyle: charts.TextStyleSpec(fontSize: 11),
                         )
                       ],
                       defaultRenderer: new charts.ArcRendererConfig(
@@ -113,10 +136,70 @@ class _PieChartState extends State<PieChart> {
           ),
         ),
       ),
-      Container(
-        child:Text("hello")
-      )
+      Container(child: Text("hello"))
     ]);
+  }
+
+  displayDataOfTransaction() {
+    List incomeCategoryList = [];
+    double sum = 0;
+    List incomeAmounts = [];
+    //List uniqueCategoryList = [];
+
+    for (var i = 0; i < listOfTransaction.length; i++) {
+      //print(listOfTransaction[i].data["Category Name"]);
+      if (listOfTransaction[i].data["Transaction Type"] == "Income") {
+        incomeCategoryList.add(listOfTransaction[i].data["Category"].trim());
+      }
+    }
+
+    List uniqueCategoryList=incomeCategoryList.toSet().toList();
+
+    // for (var i = 0; i < incomeCategoryList.length; i++) {
+    //   for (var j = 0; j < incomeCategoryList.length; j++) {
+    //     if (incomeCategoryList[i] == incomeCategoryList[i + 1]) {
+    //       incomeCategoryList.removeAt(i+1);
+          
+    //     }
+    //   }
+    // }
+
+    // for (var i = 0; i < incomeCategoryList.length - 1; i++) {
+    //   if (incomeCategoryList[i] == incomeCategoryList[i + 1]) {
+    //     incomeCategoryList.removeAt(i);
+    //     i=i-1;
+    //   }
+    // }
+
+    // for (var i = 0; i < incomeCategoryList.length; i++) {
+    //   if (addUniqueCategoryList.isEmpty) {
+    //     addUniqueCategoryList.add(incomeCategoryList[i]);
+    //   }else if(addUniqueCategoryList.isNotEmpty){
+    //     for (var j = 0; j < addUniqueCategoryList.length; j++) {
+    //       if (addUniqueCategoryList[j]!=incomeCategoryList[i]) {
+    //         addUniqueCategoryList.add(incomeCategoryList[i]);
+    //       }
+    //     }
+    //   }
+    // }
+
+    for (var i = 0; i < uniqueCategoryList.length; i++) {
+      print(uniqueCategoryList[i]);
+    }
+
+    for (var i = 0; i < incomeCategoryList.length; i++) {
+      for (var j = 0; j < listOfTransaction.length; j++) {
+        if (incomeCategoryList[i] == listOfTransaction[j].data["Category"]) {
+          sum = sum + double.parse(listOfTransaction[j].data["Amount"]);
+        }
+
+        while (j == listOfTransaction.length - 1) {
+          incomeAmounts.add(sum);
+          sum = 0;
+          break;
+        }
+      }
+    }
   }
 }
 
