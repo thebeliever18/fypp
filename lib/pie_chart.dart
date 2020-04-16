@@ -187,19 +187,21 @@ class _PieChartState extends State<PieChart> {
       print(uniqueCategoryList[i]);
     }
 
-    for (var i = 0; i < incomeCategoryList.length; i++) {
-      for (var j = 0; j < listOfTransaction.length; j++) {
-        if (incomeCategoryList[i] == listOfTransaction[j].data["Category"]) {
-          sum = sum + double.parse(listOfTransaction[j].data["Amount"]);
-        }
 
-        while (j == listOfTransaction.length - 1) {
-          incomeAmounts.add(sum);
-          sum = 0;
-          break;
-        }
-      }
-    }
+    ///left/////////////////////for tomorrow////
+    // for (var i = 0; i < incomeCategoryList.length; i++) {
+    //   for (var j = 0; j < listOfTransaction.length; j++) {
+    //     if (incomeCategoryList[i] == listOfTransaction[j].data["Category"]) {
+    //       sum = sum + double.parse(listOfTransaction[j].data["Amount"]);
+    //     }
+
+    //     while (j == listOfTransaction.length - 1) {
+    //       incomeAmounts.add(sum);
+    //       sum = 0;
+    //       break;
+    //     }
+    //   }
+    // }
   }
 }
 
