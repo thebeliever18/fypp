@@ -1,6 +1,7 @@
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:expense_tracker_app/add_envelope_page.dart';
 import 'package:expense_tracker_app/categories.dart';
+import 'package:expense_tracker_app/decorations.dart';
 import 'package:expense_tracker_app/envelope_reorderable_listview.dart';
 import 'package:expense_tracker_app/login_registration_page.dart';
 import 'package:expense_tracker_app/envelope_model.dart';
@@ -37,6 +38,26 @@ var listOfTransaction;
 bool displayDataForCalculation = false;
 
 class HomePageState extends State<HomePage> {
+
+  int pageIndex=0;
+
+  final HomePage _homePage = HomePage();
+  final TransactionListPage _transactionListPage =  TransactionListPage();
+
+  Widget showPage=HomePage();
+
+  Widget pageChooser(int page){
+    switch (page){
+      case 0:
+      return _homePage;
+      break;
+      case 1:
+      return _transactionListPage;
+      break;
+    }
+  }
+
+
   String message;
   HomePageState([this.message]);
 
@@ -118,14 +139,14 @@ class HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       key: _scaffoldKey,
-      backgroundColor: Colors.blueAccent,
+      backgroundColor: Colors.white,
       appBar: AppBar(
-          backgroundColor: Colors.white,
+          backgroundColor: setNaturalGreenColor(),
           title: Text(
-            "Envelope",
-            style: TextStyle(color: Colors.black),
+            "Home",
+            style: TextStyle(color: Colors.white),
           ),
-          elevation: 0,
+          //elevation: 0,
           leading: Row(
             children: <Widget>[
               SizedBox(
@@ -166,27 +187,32 @@ class HomePageState extends State<HomePage> {
       //A bottom navigation bar to display at the bottom of the scaffold.
 
       bottomNavigationBar: CurvedNavigationBar(
-        backgroundColor: Colors.blueAccent,
+        color: setNaturalGreenColor(),
+         backgroundColor: Colors.white,
+        // buttonBackgroundColor: setNaturalGreenColor(),
         height: 50,
         items: <Widget>[
-          IconButton(
-            icon: Icon(
+          // IconButton(
+          //   icon: 
+          Icon(
               Icons.home,
               size: 30,
+              color: Colors.white,
             ),
-            onPressed: () {},
-          ),
-          IconButton(
-              onPressed: () {
-                Navigator.push(context, MaterialPageRoute(builder: (context) {
-                  return TransactionListPage();
-                }));
-              },
-              icon: Icon(Icons.calendar_today, size: 25)),
+            //onPressed: () {},
+          //),
+          // IconButton(
+          //     onPressed: () {
+          //       // Navigator.push(context, MaterialPageRoute(builder: (context) {
+          //       //   return TransactionListPage();
+          //       // }));
+          //     },
+            Icon(Icons.calendar_today, size: 25,color: Colors.white,),
           IconButton(
               icon: Icon(
                 Icons.add,
                 size: 30,
+              color: Colors.white,
               ),
               onPressed: () {
                 Navigator.push(context, MaterialPageRoute(builder: (context) {
@@ -197,6 +223,7 @@ class HomePageState extends State<HomePage> {
               icon: Icon(
                 Icons.pie_chart,
                 size: 30,
+                color: Colors.white,
               ),
               onPressed: () {
                 Navigator.push(context, MaterialPageRoute(builder: (context) {
@@ -207,6 +234,7 @@ class HomePageState extends State<HomePage> {
               icon: Icon(
                 Icons.settings,
                 size: 30,
+                color: Colors.white,
               ),
               onPressed: () {
                 Navigator.push(context,
@@ -222,9 +250,13 @@ class HomePageState extends State<HomePage> {
 
         //index 0 will be selected by default in bottom navigation bar
 
-        index: 0,
-        onTap: (index) {
+        index: pageIndex,
+        onTap: (int tappedIndex) {
+          print("tapped");
           //Handle button tap
+          setState(() {
+            showPage=pageChooser(tappedIndex);
+          });
         },
       ),
       body: SingleChildScrollView(
@@ -278,7 +310,7 @@ class HomePageState extends State<HomePage> {
         if (listEnvelopeFirestoreData == null)
           Center(
               child: CircularProgressIndicator(
-            backgroundColor: Colors.purple,
+            //backgroundColor: Colors.purple,
             //valueColor: AlwaysStoppedAnimation<Color>(Colors.red),
             //value: 0.9,
           )),
@@ -309,7 +341,7 @@ class HomePageState extends State<HomePage> {
   Widget addEnvelopeButton() {
     return Container(
       decoration: BoxDecoration(
-        color: Colors.red,
+        color: setNaturalGreenColor(),
         borderRadius: BorderRadius.all(Radius.circular(10.0)),
       ),
       height: 50,
@@ -326,7 +358,9 @@ class HomePageState extends State<HomePage> {
         },
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: <Widget>[Text("ADD ENVELOPE"), Icon(Icons.add_circle)],
+          children: <Widget>[Text("ADD ENVELOPE",style: TextStyle(
+            color:Colors.white
+          )), Icon(Icons.add_circle,color: Colors.white,)],
         ),
       ),
     );
@@ -371,7 +405,7 @@ class HomePageState extends State<HomePage> {
   Widget addEnvelope(String title, String text) {
     return Container(
       decoration: BoxDecoration(
-        color: Colors.red,
+        color: setNaturalGreenColor(),
         borderRadius: BorderRadius.all(Radius.circular(10.0)),
       ),
       height: 50,
@@ -439,18 +473,18 @@ drawerItems(context) {
       DrawerHeader(
         child: Column(
           children: <Widget>[
-            CircleAvatar(radius: 55, child: displayFirstLetterofEmail()),
+            CircleAvatar(radius: 55, child: displayFirstLetterofEmail(),backgroundColor: Colors.white,foregroundColor: setNaturalGreenColor(),),
             SizedBox(
               height: 10,
             ),
             Text(LoginRegistrationPageState.emailController.text)
           ],
         ),
-        decoration: BoxDecoration(color: Colors.red),
+        decoration: BoxDecoration(color: setNaturalGreenColor()),
       ),
       ListTile(
-        leading: Icon(Icons.home),
-        title: Text("Home"),
+        leading: Icon(Icons.home,color: Colors.black,),
+        title: Text("Home",style: TextStyle(color:Colors.black),),
         onTap: () {
           //Navigating to home page
           Navigator.push(context, MaterialPageRoute(builder: (context) {
@@ -459,8 +493,8 @@ drawerItems(context) {
         },
       ),
       ListTile(
-        leading: Icon(Icons.category),
-        title: Text("Categories"),
+        leading: Icon(Icons.category,color: Colors.black),
+        title: Text("Categories",style: TextStyle(color:Colors.black)),
         onTap: () {
           //Navigating to category list page
           Navigator.push(context, MaterialPageRoute(builder: (context) {
@@ -469,8 +503,8 @@ drawerItems(context) {
         },
       ),
       ListTile(
-        leading: Icon(Icons.shopping_basket),
-        title: Text("Shopping lists"),
+        leading: Icon(Icons.shopping_basket,color: Colors.black),
+        title: Text("Shopping lists",style: TextStyle(color:Colors.black)),
         onTap: () {
           //Navigating to shopping list page
           Navigator.push(context, MaterialPageRoute(builder: (context) {

@@ -50,13 +50,14 @@ class TransactionListPageState extends State<TransactionListPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text("Transactions List"),
-        backgroundColor: setNaturalGreenColor(),
-      ),
-      body: transactionListPageBody(),
-    );
+    return transactionListPageBody();
+    // return Scaffold(
+    //   appBar: AppBar(
+    //     title: Text("Transactions List"),
+    //     backgroundColor: setNaturalGreenColor(),
+    //   ),
+    //   body: transactionListPageBody(),
+    // );
   }
 
   //decoration for the cards of transaction list page
@@ -65,9 +66,9 @@ class TransactionListPageState extends State<TransactionListPage> {
       return ListView(children: <Widget>[
         for (var i = 0; i < listOfTransaction.length; i++)
           Card(
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(20.0)),
-              elevation: 7.0,
+              // shape: RoundedRectangleBorder(
+              //     borderRadius: BorderRadius.circular(20.0)),
+              //elevation: 7.0,
               color: Colors.white,
               child: Container(
                 height: 100,
@@ -97,7 +98,7 @@ class TransactionListPageState extends State<TransactionListPage> {
                           children: <Widget>[
                             Text("${listOfTransaction[i].data['Date']}",
                                 style: TextStyle(
-                                    color: setNaturalGreenColor(),
+                                    color: Colors.black,
                                     fontWeight: FontWeight.bold,
                                     fontSize: 25.0))
                           ]),
@@ -109,7 +110,7 @@ class TransactionListPageState extends State<TransactionListPage> {
                           child: Text(
                               "${listOfTransaction[i].data['Envelope']}",
                               style: TextStyle(
-                                  color: setNaturalGreenColor(),
+                                  color: Colors.black,
                                   fontWeight: FontWeight.bold,
                                   fontSize: 20.0)),
                         ),
@@ -124,7 +125,7 @@ class TransactionListPageState extends State<TransactionListPage> {
                               child: Text(
                                   "${listOfTransaction[i].data['Category']}",
                                   style: TextStyle(
-                                      color: setNaturalGreenColor(),
+                                      color: Colors.black,
                                       fontWeight: FontWeight.bold,
                                       fontSize: 20.0)),
                             ),

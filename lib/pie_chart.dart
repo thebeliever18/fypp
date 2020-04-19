@@ -12,10 +12,13 @@ class PieChart extends StatefulWidget {
 }
 
 class _PieChartState extends State<PieChart> {
-  List<charts.Series<PieChartCategory, String>> _seriesData;
+  List<charts.Series<PieChartCategory, String>> _incomeSeriesData;
+  List<charts.Series<PieChartCategory, String>> _expenseSeriesData;
+
   String uid;
   var listOfTransaction;
   bool displayPieChart = false;
+
 //Method for generating random color
   getRandomColor() {
     RandomColor randomColor = RandomColor();
@@ -76,106 +79,130 @@ class _PieChartState extends State<PieChart> {
   }
 
   pieChartBody() {
-    if (displayPieChart==true) {
+    if (displayPieChart == true) {
       return TabBarView(children: [
-      Padding(
-        padding: EdgeInsets.all(8.0),
-        child: Container(
-          child: Center(
-            child: Column(
-              children: <Widget>[
-                Text(
-                  'Income made from specific categories',
-                  style: TextStyle(fontSize: 22.0, fontWeight: FontWeight.bold),
-                ),
-                SizedBox(
-                  height: 10.0,
-                ),
-                Expanded(
-                  child: charts.PieChart(_seriesData,
-                      animate: true,
-                      animationDuration: Duration(seconds: 5),
-                      behaviors: [
-                        new charts.DatumLegend(
-                          outsideJustification:
-                              charts.OutsideJustification.endDrawArea,
-                          horizontalFirst: false,
-                          desiredMaxRows: 2,
-                          cellPadding:
-                              new EdgeInsets.only(right: 4.0, bottom: 4.0),
-                          entryTextStyle: charts.TextStyleSpec(fontSize: 11),
-                        )
-                      ],
-                      defaultRenderer: new charts.ArcRendererConfig(
-                          arcWidth: 100,
-                          arcRendererDecorators: [
-                            new charts.ArcLabelDecorator(
-                                labelPosition: charts.ArcLabelPosition.inside)
-                          ])),
-                ),
-              ],
+        Padding(
+          padding: EdgeInsets.all(8.0),
+          child: Container(
+            child: Center(
+              child: Column(
+                children: <Widget>[
+                  //piechart for income
+                  Text(
+                    'Income made from specific categories',
+                    style:
+                        TextStyle(fontSize: 22.0, fontWeight: FontWeight.bold),
+                  ),
+                  SizedBox(
+                    height: 10.0,
+                  ),
+
+                  Expanded(
+                    child: charts.PieChart(_incomeSeriesData,
+                        animate: true,
+                        animationDuration: Duration(seconds: 5),
+                        behaviors: [
+                          new charts.DatumLegend(
+                            outsideJustification:
+                                charts.OutsideJustification.endDrawArea,
+                            horizontalFirst: false,
+                            desiredMaxRows: 2,
+                            cellPadding:
+                                new EdgeInsets.only(right: 4.0, bottom: 4.0),
+                            entryTextStyle: charts.TextStyleSpec(fontSize: 11),
+                          )
+                        ],
+                        defaultRenderer: new charts.ArcRendererConfig(
+                            arcWidth: 100,
+                            arcRendererDecorators: [
+                              new charts.ArcLabelDecorator(
+                                  labelPosition: charts.ArcLabelPosition.inside)
+                            ])),
+                  ),
+                ],
+              ),
             ),
           ),
         ),
-      ),
-      Container(child: Text("hello"))
-    ]);
-    }else if(displayPieChart==false){
+        //piechart for expense
+        Padding(
+          padding: EdgeInsets.all(8.0),
+          child: Container(
+            child: Center(
+              child: Column(
+                children: <Widget>[
+                  //piechart for income
+                  Text(
+                    'Expense made from specific categories',
+                    style:
+                        TextStyle(fontSize: 22.0, fontWeight: FontWeight.bold),
+                  ),
+                  SizedBox(
+                    height: 10.0,
+                  ),
+
+                  Expanded(
+                    child: charts.PieChart(_expenseSeriesData,
+                        animate: true,
+                        animationDuration: Duration(seconds: 5),
+                        behaviors: [
+                          new charts.DatumLegend(
+                            outsideJustification:
+                                charts.OutsideJustification.endDrawArea,
+                            horizontalFirst: false,
+                            desiredMaxRows: 2,
+                            cellPadding:
+                                new EdgeInsets.only(right: 4.0, bottom: 4.0),
+                            entryTextStyle: charts.TextStyleSpec(fontSize: 11),
+                          )
+                        ],
+                        defaultRenderer: new charts.ArcRendererConfig(
+                            arcWidth: 100,
+                            arcRendererDecorators: [
+                              new charts.ArcLabelDecorator(
+                                  labelPosition: charts.ArcLabelPosition.inside)
+                            ])),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ]);
+    } else if (displayPieChart == false) {
       return Center(
-        child:CircularProgressIndicator(),
+        child: CircularProgressIndicator(),
       );
     }
-    
   }
 
   displayDataOfTransaction() {
     List incomeCategoryList = [];
+    List expenseCategoryList=[];
     double incomeSum = 0;
+    double expenseSum=0;
     List incomeAmounts = [];
+    List expenseAmounts=[];
     //List uniqueCategoryList = [];
 
     for (var i = 0; i < listOfTransaction.length; i++) {
       //print(listOfTransaction[i].data["Category Name"]);
       if (listOfTransaction[i].data["Transaction Type"] == "Income") {
         incomeCategoryList.add(listOfTransaction[i].data["Category"].trim());
+      }else if(listOfTransaction[i].data["Transaction Type"] == "Expense"){
+        expenseCategoryList.add(listOfTransaction[i].data["Category"].trim());
       }
     }
 
     List uniqueIncomeCategoryList = incomeCategoryList.toSet().toList();
+    List uniqueExpenseCategoryList = expenseCategoryList.toSet().toList();
+    
 
-    // for (var i = 0; i < incomeCategoryList.length; i++) {
-    //   for (var j = 0; j < incomeCategoryList.length; j++) {
-    //     if (incomeCategoryList[i] == incomeCategoryList[i + 1]) {
-    //       incomeCategoryList.removeAt(i+1);
-
-    //     }
-    //   }
-    // }
-
-    // for (var i = 0; i < incomeCategoryList.length - 1; i++) {
-    //   if (incomeCategoryList[i] == incomeCategoryList[i + 1]) {
-    //     incomeCategoryList.removeAt(i);
-    //     i=i-1;
-    //   }
-    // }
-
-    // for (var i = 0; i < incomeCategoryList.length; i++) {
-    //   if (addUniqueCategoryList.isEmpty) {
-    //     addUniqueCategoryList.add(incomeCategoryList[i]);
-    //   }else if(addUniqueCategoryList.isNotEmpty){
-    //     for (var j = 0; j < addUniqueCategoryList.length; j++) {
-    //       if (addUniqueCategoryList[j]!=incomeCategoryList[i]) {
-    //         addUniqueCategoryList.add(incomeCategoryList[i]);
-    //       }
-    //     }
-    //   }
-    // }
-
-    for (var i = 0; i < uniqueIncomeCategoryList.length; i++) {
-      print(uniqueIncomeCategoryList[i]);
+    for (var i = 0; i < uniqueExpenseCategoryList.length; i++) {
+      print(uniqueExpenseCategoryList[i]);
     }
 
-    //left/////////////////////for tomorrow////
+    //for income
     for (var i = 0; i < uniqueIncomeCategoryList.length; i++) {
       for (var j = 0; j < listOfTransaction.length; j++) {
         if (uniqueIncomeCategoryList[i] ==
@@ -194,22 +221,43 @@ class _PieChartState extends State<PieChart> {
       }
     }
 
-    for (var i = 0; i < incomeAmounts.length; i++) {
-      print(incomeAmounts[i]);
+
+    //for expense
+    for (var i = 0; i < uniqueExpenseCategoryList.length; i++) {
+      for (var j = 0; j < listOfTransaction.length; j++) {
+        if (uniqueExpenseCategoryList[i] ==
+            listOfTransaction[j].data["Category"].trim()) {
+          if (listOfTransaction[j].data["Transaction Type"] == "Expense") {
+            expenseSum =
+                expenseSum + double.parse(listOfTransaction[j].data["Amount"]);
+          }
+        }
+
+        while (j == listOfTransaction.length - 1) {
+          expenseAmounts.add(expenseSum);
+          expenseSum = 0;
+          break;
+        }
+      }
     }
 
-    _generateData(uniqueIncomeCategoryList, incomeAmounts);
+    for (var i = 0; i < expenseAmounts.length; i++) {
+      print(expenseAmounts[i]);
+    }
+
+    _generateData(uniqueIncomeCategoryList, incomeAmounts,uniqueExpenseCategoryList,expenseAmounts);
   }
 
-  _generateData(uniqueIncomeCategoryList, incomeAmounts) {
-    _seriesData = List<charts.Series<PieChartCategory, String>>();
-    var piedata = [
+  _generateData(uniqueIncomeCategoryList, incomeAmounts,uniqueExpenseCategoryList,expenseAmounts) {
+    _incomeSeriesData = List<charts.Series<PieChartCategory, String>>();
+
+    var incomePiedata = [
       for (var i = 0; i < uniqueIncomeCategoryList.length; i++)
         PieChartCategory('${uniqueIncomeCategoryList[i]}', incomeAmounts[i],
             getRandomColor()),
     ];
 
-    _seriesData.add(
+    _incomeSeriesData.add(
       charts.Series(
         domainFn: (PieChartCategory pieChartCategory, _) =>
             pieChartCategory.categoryName,
@@ -217,14 +265,37 @@ class _PieChartState extends State<PieChart> {
             pieChartCategory.amount,
         colorFn: (PieChartCategory pieChartCategory, _) =>
             charts.ColorUtil.fromDartColor(pieChartCategory.colorVal),
-        id: 'Category Data',
-        data: piedata,
+        id: 'Income Category Data',
+        data: incomePiedata,
+        labelAccessorFn: (PieChartCategory row, _) => '${row.amount}',
+      ),
+    );
+
+
+    _expenseSeriesData = List<charts.Series<PieChartCategory, String>>();
+    
+    var expensePiedata = [
+      for (var i = 0; i < uniqueExpenseCategoryList.length; i++)
+        PieChartCategory('${uniqueExpenseCategoryList[i]}', expenseAmounts[i],
+            getRandomColor()),
+    ];
+
+    _expenseSeriesData.add(
+      charts.Series(
+        domainFn: (PieChartCategory pieChartCategory, _) =>
+            pieChartCategory.categoryName,
+        measureFn: (PieChartCategory pieChartCategory, _) =>
+            pieChartCategory.amount,
+        colorFn: (PieChartCategory pieChartCategory, _) =>
+            charts.ColorUtil.fromDartColor(pieChartCategory.colorVal),
+        id: 'Expense Category Data',
+        data: expensePiedata,
         labelAccessorFn: (PieChartCategory row, _) => '${row.amount}',
       ),
     );
 
     setState(() {
-      displayPieChart=true;
+      displayPieChart = true;
     });
   }
 }
