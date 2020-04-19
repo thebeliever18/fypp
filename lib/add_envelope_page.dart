@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:expense_tracker_app/bottom_navigation_bar.dart';
 import 'package:expense_tracker_app/home_page.dart';
 import 'package:expense_tracker_app/envelope_model.dart';
 import 'package:expense_tracker_app/decorations.dart';
@@ -182,7 +183,7 @@ class AddEnvelopePageState extends State<AddEnvelopePage> {
                                 //Navigating to home page after pressing  check button of app bar.
                                 Navigator.push(context,
                                     MaterialPageRoute(builder: (context) {
-                                  return HomePage();
+                                  return ClassBottomNavigationBar();
                                 }));
                               });
 

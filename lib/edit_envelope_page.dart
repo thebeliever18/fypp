@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:expense_tracker_app/bottom_navigation_bar.dart';
 //import 'package:firebase_auth/firebase_auth.dart';
 
 import 'package:expense_tracker_app/home_page.dart';
@@ -215,7 +216,7 @@ class EditEnvelopePageState extends State<EditEnvelopePage> {
                                       () {
                                     Navigator.push(context,
                                         MaterialPageRoute(builder: (context) {
-                                      return HomePage();
+                                      return ClassBottomNavigationBar();
                                     }));
                                   });
                                 },
@@ -289,7 +290,7 @@ class EditEnvelopePageState extends State<EditEnvelopePage> {
                               Future.delayed(const Duration(seconds: 2), () {
                                 Navigator.push(context,
                                     MaterialPageRoute(builder: (context) {
-                                  return HomePage();
+                                  return ClassBottomNavigationBar();
                                 }));
                               });
 

@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:expense_tracker_app/bottom_navigation_bar.dart';
 import 'package:expense_tracker_app/envelope_model.dart';
 import 'package:expense_tracker_app/home_page.dart';
 import 'package:expense_tracker_app/login_registration_page.dart';
@@ -196,7 +197,7 @@ class SetUpBalancePageState extends State<SetUpBalancePage> {
                   Firestore.instance.collection('Envelopes').document(uid).collection('userData').document().setData({'Envelope Name': "Cash",'Envelope Type':"Cash",'Initial Value':output+".0"});
                   //Navigating to home page
                   Navigator.push(context, MaterialPageRoute(builder: (context) {
-                    return HomePage();
+                    return ClassBottomNavigationBar();
                   }));
                 },
               ),

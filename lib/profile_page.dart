@@ -1,30 +1,66 @@
+import 'package:expense_tracker_app/bottom_navigation_bar.dart';
 import 'package:expense_tracker_app/decorations.dart';
 import 'package:expense_tracker_app/main.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-class SettingsPage extends StatefulWidget {
+class ProfilePage extends StatefulWidget {
   @override
-  _SettingsPageState createState() => _SettingsPageState();
+  _ProfilePageState createState() => _ProfilePageState();
 }
 
-final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
+final GlobalKey<ScaffoldState> _scaffoldkey = new GlobalKey<ScaffoldState>();
 
-class _SettingsPageState extends State<SettingsPage> {
+class _ProfilePageState extends State<ProfilePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      key: _scaffoldKey,
-      appBar: AppBar(
-        title: Text("Settings"),
-        backgroundColor: setNaturalGreenColor(),
+      key: _scaffoldkey,
+      drawer: Drawer(
+        elevation: 1.0,
+        child: drawerItems(context),
       ),
-      body: bodyOfSettingsPage(),
+      appBar: AppBar(
+        backgroundColor: setNaturalGreenColor(),
+        title: Text("Profile"),
+        leading: Row(
+            children: <Widget>[
+              SizedBox(
+                width: 9,
+              ),
+              Card(
+                elevation: 3.0,
+                clipBehavior: Clip.antiAliasWithSaveLayer,
+                child: Container(
+                  height: 30,
+                  width: 30,
+                  child: IconButton(
+                    icon: Image.asset(
+                      "images/logoET.png",
+                      fit: BoxFit.cover,
+                    ),
+                    onPressed: () {
+                      /*
+                       * currentState is the state for the widget in the tree that currently has a global key.
+                       * openDrawer() is the method which opens the drawer.
+                       */
+
+                      _scaffoldkey.currentState.openDrawer();
+                    },
+                  ),
+                ),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(200),
+                ),
+              )
+            ],
+          )),
+      body: bodyOfProfilePage(),
     );
   }
 
-  bodyOfSettingsPage() {
+  bodyOfProfilePage() {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: <Widget>[
@@ -76,14 +112,14 @@ class _SettingsPageState extends State<SettingsPage> {
                       duration: Duration(seconds: 2),
                     );
 
-                    _scaffoldKey.currentState.showSnackBar(snackBar);
+                    _scaffoldkey.currentState.showSnackBar(snackBar);
 
                     Future.delayed(const Duration(seconds: 3), () {
                       Navigator.push(context,
                           MaterialPageRoute(builder: (context) {
                         return Main();
                       }));
-                      _scaffoldKey.currentState.removeCurrentSnackBar();
+                      _scaffoldkey.currentState.removeCurrentSnackBar();
                     });
                   } catch (e) {
                     final snackBar = SnackBar(
@@ -91,7 +127,7 @@ class _SettingsPageState extends State<SettingsPage> {
                       duration: Duration(seconds: 2),
                     );
 
-                    _scaffoldKey.currentState.showSnackBar(snackBar);
+                    _scaffoldkey.currentState.showSnackBar(snackBar);
                   }
                 },
               ),

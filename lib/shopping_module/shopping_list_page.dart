@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:expense_tracker_app/bottom_navigation_bar.dart';
 import 'package:expense_tracker_app/decorations.dart';
 import 'package:expense_tracker_app/home_page.dart';
 import 'package:expense_tracker_app/login_registration_page.dart';
@@ -70,7 +71,7 @@ class ShoppingListPageState extends State<ShoppingListPage> {
               icon: Icon(Icons.arrow_back),
               onPressed: () {
                 Navigator.push(context, MaterialPageRoute(builder: (context) {
-                  return HomePage();
+                  return ClassBottomNavigationBar();
                 }));
               }),
           title: Text(

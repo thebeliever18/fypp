@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:expense_tracker_app/bottom_navigation_bar.dart';
 import 'package:expense_tracker_app/decorations.dart';
 import 'package:expense_tracker_app/envelope_reorderable_listview.dart';
 import 'package:expense_tracker_app/home_page.dart';
@@ -167,6 +168,9 @@ class TransactionPageState extends State<TransactionPage> {
             ? Text("Edit Transaction")
             : Text("Add Transaction"),
         backgroundColor: setNaturalGreenColor(),
+        leading: IconButton(icon: Icon(Icons.close), onPressed: (){
+          Navigator.of(context).pop();
+        }),
         actions: <Widget>[
           displayEditTransactionPage
               ? IconButton(
@@ -214,7 +218,7 @@ class TransactionPageState extends State<TransactionPage> {
                                       () {
                                     Navigator.push(context,
                                         MaterialPageRoute(builder: (context) {
-                                      return HomePage();
+                                      return ClassBottomNavigationBar();
                                     }));
                                   });
                                 },
@@ -674,7 +678,7 @@ class TransactionPageState extends State<TransactionPage> {
         //Navigating to home page after pressing  save transaction button.
         Future.delayed(const Duration(seconds: 3), () {
           Navigator.push(context, MaterialPageRoute(builder: (context) {
-            return HomePage();
+            return ClassBottomNavigationBar();
           }));
         });
 

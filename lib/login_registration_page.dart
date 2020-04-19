@@ -1,4 +1,5 @@
 
+import 'package:expense_tracker_app/bottom_navigation_bar.dart';
 import 'package:expense_tracker_app/home_page.dart';
 import 'package:expense_tracker_app/set_up_balance_page.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -299,7 +300,7 @@ class LoginRegistrationPageState extends State<LoginRegistrationPage> {
 
         //Navigating to Home Page if user logins successfully
         Navigator.push(context, MaterialPageRoute(builder: (context) {
-          return HomePage();
+          return ClassBottomNavigationBar();
         }));
       }
     } catch (e) {
