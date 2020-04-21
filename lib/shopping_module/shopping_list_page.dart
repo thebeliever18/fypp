@@ -1,7 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:expense_tracker_app/bottom_navigation_bar.dart';
 import 'package:expense_tracker_app/decorations.dart';
-import 'package:expense_tracker_app/home_page.dart';
 import 'package:expense_tracker_app/login_registration_page.dart';
 import 'package:expense_tracker_app/shopping_module/create_new_shopping_list_page.dart';
 import 'package:expense_tracker_app/shopping_module/items_list.dart';
