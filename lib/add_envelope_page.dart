@@ -50,10 +50,7 @@ class AddEnvelopePageState extends State<AddEnvelopePage> {
   @override
   void initState() {
     super.initState();
-    //initializing the initial value of the textfeild 0 at first run
-    // setState(() {
-    //   _inputController.text = "0.0";
-    // });
+    
 
     //addListener is triggered whenever the focus of the textfield changes
     focusNodeEnvelopeName.addListener(() {
@@ -93,12 +90,7 @@ class AddEnvelopePageState extends State<AddEnvelopePage> {
   bool validateDropDownButton = false;
 
   String hintTextForDropDownBox = "Select envelope type *";
-  //setting autofocus to true
-  // setAutoFocusTrue(){
-  //   setState(() {
-  //     autofocus=true;
-  //   });
-  // }
+  
 
   @override
   Widget build(BuildContext context) {

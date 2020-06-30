@@ -1,12 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:expense_tracker_app/bottom_navigation_bar.dart';
-//import 'package:firebase_auth/firebase_auth.dart';
-
 import 'package:expense_tracker_app/home_page.dart';
 import 'package:expense_tracker_app/envelope_model.dart';
 import 'package:expense_tracker_app/decorations.dart';
 import 'package:expense_tracker_app/login_registration_page.dart';
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_simple_calculator/flutter_simple_calculator.dart';
@@ -75,10 +72,7 @@ class EditEnvelopePageState extends State<EditEnvelopePage> {
   @override
   void initState() {
     super.initState();
-    //initializing the initial value of the textfeild 0 at first run
-    // setState(() {
-    //   _inputController.text = "0.0";
-    // });
+   
 
     //addListener is triggered whenever the focus of the textfield changes
     focusNodeEnvelopeName.addListener(() {
@@ -138,12 +132,7 @@ class EditEnvelopePageState extends State<EditEnvelopePage> {
   bool validateDropDownButton = false;
 
   String hintTextForDropDownBox = "Select envelope type *";
-  //setting autofocus to true
-  // setAutoFocusTrue(){
-  //   setState(() {
-  //     autofocus=true;
-  //   });
-  // }
+  
 
   @override
   Widget build(BuildContext context) {

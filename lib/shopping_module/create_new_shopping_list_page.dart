@@ -11,11 +11,13 @@ class CreateNewShoppingListPage extends StatefulWidget {
 }
 
 class CreateNewShoppingListPageState extends State<CreateNewShoppingListPage> {
+
   FocusNode focusNodeNameOfShoppingList = new FocusNode();
   bool autoValidate = false;
   final _formKey = GlobalKey<FormState>();
   var shoppingListName = TextEditingController();
 
+  //initState method is executed first
   @override
   void initState() {
     // TODO: implement initState
@@ -26,6 +28,7 @@ class CreateNewShoppingListPageState extends State<CreateNewShoppingListPage> {
     });
   }
 
+  //method for disposing focus node
   @override
   void dispose() {
     
@@ -53,7 +56,6 @@ class CreateNewShoppingListPageState extends State<CreateNewShoppingListPage> {
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.start,
-        //crossAxisAlignment: CrossAxisAlignment.center,
         children: <Widget>[
           SizedBox(
             height: 25.0,
@@ -112,6 +114,7 @@ class CreateNewShoppingListPageState extends State<CreateNewShoppingListPage> {
             child: RaisedButton(
               onPressed: () {
                 if (_formKey.currentState.validate()) {
+
                   //navigating to the page which contains different item to be purchased
                   Navigator.push(context, MaterialPageRoute(builder: (context) {
                     return ItemsList(shoppingListName.text,false);
@@ -134,6 +137,7 @@ class CreateNewShoppingListPageState extends State<CreateNewShoppingListPage> {
     );
   }
 
+  //method for changing focus colour in textformfield
   changingFocus(focusType) {
     return TextStyle(
         color: focusType.hasFocus ? setNaturalGreenColor() : Colors.grey);

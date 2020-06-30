@@ -81,7 +81,7 @@ class TransactionPageState extends State<TransactionPage> {
   //Focus node for memo textfeild
   FocusNode focusNodeMemo = new FocusNode();
 
-  //
+  
   DateTime _dateTime;
 
   String buttonText = "Save Transaction";

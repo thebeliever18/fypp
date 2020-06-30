@@ -22,6 +22,7 @@ dependencies:
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
+
   cupertino_icons: ^0.1.2
   
   #A flutter package for easy implementation of curved navigation bar. 
@@ -29,9 +30,6 @@ dependencies:
   
   #A flutter package that provides simple calculator.
   flutter_simple_calculator:
-  
-  # #A Flutter plugin to use the Firebase Core API, which enables connecting to multiple Firebase apps.
-  # firebase_core:
 
   #A Flutter plugin to use the Firebase Authentication API.
   firebase_auth:
@@ -42,11 +40,17 @@ dependencies:
   #Flutter plugin for generating random colours
   random_color: ^1.0.3
 
-  #Flutter plugin for provider package
-  provider: ^4.0.4
-
   #Flutter plugin for charts
   charts_flutter: ^0.9.0
+  
+  #Flutter plugin for updating Flutter app's launcher icon
+  flutter_launcher_icons: ^0.7.5
+
+flutter_icons:
+  
+  android: true
+  image_path: "images/logoET.png"
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

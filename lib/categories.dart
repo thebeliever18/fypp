@@ -180,10 +180,6 @@ class CatagoriesState extends State<Catagories> {
                                     []; //blank list for add elements which you want to delete
                                 val.add('$itemToBeDeleted');
 
-                                // listOfCategory[0]
-                                //     .data["Category Name"][i]
-                                //     .remove(val);
-
                                 Firestore.instance
                                     .collection('Categories')
                                     .document(uid)
@@ -300,10 +296,7 @@ class CatagoriesState extends State<Catagories> {
               FlatButton(
                   onPressed: () {
                     if (title == "Edit") {
-                      //print(itemToBeEdited.text);
-                      // var itemToBeEdited =
-                      //               listOfCategory[0].data["Category Name"][index];
-                      //           print("itemToBeedited is" + itemToBeEdited);
+                      
                       if (itemToBeEdited.text.isEmpty) {
                         final snackBar = SnackBar(
                           content: Text('Please enter the value to be edited.'),

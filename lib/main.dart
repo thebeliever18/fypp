@@ -35,35 +35,5 @@ class Main extends StatelessWidget {
       );
   }
 
-  //method for exiting application
-  // exitApp(context){
-    
-  //   return showDialog(
-  //       context: context,
-  //       builder: (BuildContext context) {
-  //         return AlertDialog(
-  //           content: Text("Are you sure you want to exit?"),
-  //           actions: <Widget>[
-  //             FlatButton(
-  //               child: Text(
-  //                 "Cancel",
-  //                 style: TextStyle(color: Colors.black),
-  //               ),
-  //               onPressed: () {
-  //                 Navigator.of(context).pop();
-  //               },
-  //             ),
-  //             FlatButton(
-  //               child: Text(
-  //                 "Yes",
-  //                 style: TextStyle(color: Colors.red),
-  //               ),
-  //               onPressed: () async {
-  //                 exit(0);
-  //               },
-  //             ),
-  //           ],
-  //         );
-  //       });
-  // }
+  
 }

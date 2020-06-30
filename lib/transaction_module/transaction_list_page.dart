@@ -51,13 +51,6 @@ class TransactionListPageState extends State<TransactionListPage> {
   @override
   Widget build(BuildContext context) {
     return transactionListPageBody();
-    // return Scaffold(
-    //   appBar: AppBar(
-    //     title: Text("Transactions List"),
-    //     backgroundColor: setNaturalGreenColor(),
-    //   ),
-    //   body: transactionListPageBody(),
-    // );
   }
 
   //decoration for the cards of transaction list page
@@ -66,9 +59,7 @@ class TransactionListPageState extends State<TransactionListPage> {
       return ListView(children: <Widget>[
         for (var i = 0; i < listOfTransaction.length; i++)
           Card(
-              // shape: RoundedRectangleBorder(
-              //     borderRadius: BorderRadius.circular(20.0)),
-              //elevation: 7.0,
+              
               color: Colors.white,
               child: Container(
                 height: 100,

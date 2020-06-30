@@ -5,9 +5,4 @@ class ShoppingListModel{
     this.itemName=itemName;
     this.price=price;
   }
-  // static List<ShoppingListModel> getShoppingItemData() {
-  //   return <ShoppingListModel>[
-  //     ShoppingListModel(itemName: "Spandan Bhandari", price:"89"),
-  //   ];
-  // }
 }

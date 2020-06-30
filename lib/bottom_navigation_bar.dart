@@ -115,24 +115,16 @@ class ClassBottomNavigationBarState extends State<ClassBottomNavigationBar> {
       bottomNavigationBar: CurvedNavigationBar(
         color: setNaturalGreenColor(),
         backgroundColor: Colors.white,
-        // buttonBackgroundColor: setNaturalGreenColor(),
+        
         height: 50,
         items: <Widget>[
-          // IconButton(
-          //   icon:
+          
           Icon(
             Icons.home,
             size: 30,
             color: Colors.white,
           ),
-          //onPressed: () {},
-          //),
-          // IconButton(
-          //     onPressed: () {
-          //       // Navigator.push(context, MaterialPageRoute(builder: (context) {
-          //       //   return TransactionListPage();
-          //       // }));
-          //     },
+          
           Icon(
             Icons.calendar_today,
             size: 25,
@@ -149,28 +141,19 @@ class ClassBottomNavigationBarState extends State<ClassBottomNavigationBar> {
                   return TransactionPage(false);
                 }));
               }),
-          // IconButton(
+         
                Icon(
                 Icons.pie_chart,
                 size: 30,
                 color: Colors.white,
               ),
-              // onPressed: () {
-              //   Navigator.push(context, MaterialPageRoute(builder: (context) {
-              //     return PieChart();
-              //   }));
-              // }),
-          //IconButton(
+              
               Icon(
                 Icons.person,
                 size: 30,
                 color: Colors.white,
               ),
-              // onPressed: () {
-              //   Navigator.push(context, MaterialPageRoute(builder: (context) {
-              //     return ProfilePage();
-              //   }));
-              // }),
+              
         ],
 
         //animationDuration for increasing the duration of the animation

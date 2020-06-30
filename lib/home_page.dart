@@ -69,10 +69,6 @@ class HomePageState extends State<HomePage> {
         displayData = true;
       });
     }
-
-    //print(listEnvelopeFirestoreData[0].data);
-    //print(listEnvelopeFirestoreData[0].data['Envelope Name']);
-    //print(listEnvelopeFirestoreData[0].data['Initial Value']);
   }
 
   getTransactionsData() async {
@@ -160,9 +156,7 @@ class HomePageState extends State<HomePage> {
         if (listEnvelopeFirestoreData == null)
           Center(
               child: CircularProgressIndicator(
-            //backgroundColor: Colors.purple,
-            //valueColor: AlwaysStoppedAnimation<Color>(Colors.red),
-            //value: 0.9,
+            
           )),
 
         //This if statement works when user logins in his/her account and the list extracted from firestore is not null
@@ -314,6 +308,6 @@ calculationForTheValidationOfAmount(String envelopeName, double initialAmount) {
   return initialAmount;
 }
 
-//Widget for addEnvelope conatiner
+
 
 

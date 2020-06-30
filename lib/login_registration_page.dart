@@ -96,15 +96,7 @@ class LoginRegistrationPageState extends State<LoginRegistrationPage> {
                 child: TextFormField(
                   controller: passwordController,
                   obscureText: true,
-                  // validator: (value) {
-                  //   if (value.isEmpty) {
-                  //     return 'Please enter your Password';
-                  //   } else if (value.length < 4) {
-                  //     return 'Password must be of more than 3 characters';
-                  //   } else {
-                  //     return null;
-                  //   }
-                  // },
+                  
                   decoration: InputDecoration(
 
                       //Underline color of text field

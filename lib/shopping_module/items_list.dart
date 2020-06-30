@@ -16,6 +16,7 @@ String uid;
 GlobalKey<ScaffoldState> _scaffKey = new GlobalKey<ScaffoldState>();
 TextEditingController renameText;
 final _formKey = GlobalKey<FormState>();
+
 //Method for appending data to the ShoppingListModel
 void addToShoppingList(ShoppingListModel data) {
   shoppingList.add(data);
@@ -130,6 +131,7 @@ class ItemsListState extends State<ItemsList> {
   }
 
   @override
+  //initState method is executed first
   void initState() {
     // TODO: implement initState
     super.initState();
@@ -149,7 +151,9 @@ class ItemsListState extends State<ItemsList> {
 
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
+    return 
+    //Creates a widget that registers a callback to veto attempts by the user to dismiss the enclosing
+    WillPopScope(
       onWillPop: () {
         return saveDialogBox(true);
       },
@@ -713,7 +717,7 @@ class ItemsListState extends State<ItemsList> {
     selectedShoppingItems.clear();
   }
 
-  //
+  
   methodForExtractingFirebaseData() {
     print("shopping list selcted $listOfShoppingListDataSelectedItems");
     print("shopping list unselcted is $listOfShoppingListDataUnselectedItems");

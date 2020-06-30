@@ -9,6 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:charts_flutter/flutter.dart' as charts;
 import 'package:random_color/random_color.dart';
 
+//class for creating pie-chart reports
 class PieChart extends StatefulWidget {
   @override
   _PieChartState createState() => _PieChartState();
